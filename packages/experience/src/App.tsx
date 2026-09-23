@@ -14,6 +14,7 @@ import UserInteractionContextProvider from './Providers/UserInteractionContextPr
 import DevelopmentTenantNotification from './containers/DevelopmentTenantNotification';
 import MfaVerificationGuard from './containers/MfaVerificationGuard';
 import StepUpGuard from './containers/StepUpGuard';
+import AppPortal from './pages/AppPortal';
 import Callback from './pages/Callback';
 import Consent from './pages/Consent';
 import Continue from './pages/Continue';
@@ -91,10 +92,8 @@ const App = () => {
                         element={<OneTimeTokenErrorPage />}
                       />
                       <Route path={experience.routes.switchAccount} element={<SwitchAccount />} />
-                      <Route
-                        path="unknown-session"
-                        element={<ErrorPage message="error.invalid_session" />}
-                      />
+                      <Route index element={<AppPortal />} />
+                      <Route path="unknown-session" element={<AppPortal />} />
                       <Route
                         path={experience.routes.accountSuspended}
                         element={

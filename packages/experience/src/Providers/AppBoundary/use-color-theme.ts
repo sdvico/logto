@@ -44,6 +44,10 @@ const useColorTheme = () => {
         document.body.style.setProperty(key, value);
       }
 
+      /* sdvico: tint the page background with the brand hue for identity, keep it light so existing dark-on-light text stays readable. */
+      document.body.style.setProperty('--color-bg-float-base', lightPrimary.lightness(94).string());
+      document.body.style.setProperty('--color-bg-body', lightPrimary.lightness(96).string());
+
       return;
     }
 

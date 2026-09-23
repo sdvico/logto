@@ -10,7 +10,7 @@ import DevPanel, { getDevConfig } from './DevPanel';
 import Footer, { useIsDarkMode } from './Footer';
 import congratsDark from './assets/congrats-dark.svg';
 import congrats from './assets/congrats.svg';
-import logtoIcon from './assets/logto-icon.svg';
+import logtoIcon from './assets/sdvico-icon.svg';
 import type { AppState, DeviceAuthResponse, TokenResponse, UserInfo } from './types';
 import { getStringClaim, parseJsonResponse } from './types';
 
@@ -285,7 +285,7 @@ const App = () => {
     <div className={styles.app}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <img className={styles.icon} src={logtoIcon} alt="Logto" />
+          <img className={styles.icon} src={logtoIcon} alt="sdvico" />
           <h1 className={styles.title}>Sign in to your account</h1>
         </div>
         {deviceAuth && (

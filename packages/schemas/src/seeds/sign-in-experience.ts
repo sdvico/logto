@@ -11,7 +11,8 @@ import {
 
 import { adminTenantId, defaultTenantId } from './tenant.js';
 
-export const defaultPrimaryColor = '#6139F6';
+// PLACEHOLDER - thay bằng màu chính thức của Cục Thủy sản khi có
+export const defaultPrimaryColor = '#0B5FA5';
 
 export const createDefaultSignInExperience = (
   forTenantId: string,
@@ -26,8 +27,10 @@ export const createDefaultSignInExperience = (
       darkPrimaryColor: generateDarkColor(defaultPrimaryColor),
     },
     branding: {
-      logoUrl: isCloud ? undefined : 'https://logto.io/logo.svg',
-      darkLogoUrl: isCloud ? undefined : 'https://logto.io/logo-dark.svg',
+      // PLACEHOLDER - thay bằng logo chính thức Cục Thủy sản khi có
+      logoUrl: isCloud ? undefined : 'https://sdvico.local/logo.svg',
+      // PLACEHOLDER - thay bằng logo chính thức Cục Thủy sản khi có
+      darkLogoUrl: isCloud ? undefined : 'https://sdvico.local/logo-dark.svg',
     },
     hideLogtoBranding: false,
     languageInfo: {
@@ -92,8 +95,10 @@ export const createAdminTenantSignInExperience = (
     },
     signInMode: SignInMode.Register,
     branding: {
-      logoUrl: 'https://logto.io/logo.svg',
-      darkLogoUrl: 'https://logto.io/logo-dark.svg',
+      // PLACEHOLDER - thay bằng logo chính thức Cục Thủy sản khi có
+      logoUrl: 'https://sdvico.local/logo.svg',
+      // PLACEHOLDER - thay bằng logo chính thức Cục Thủy sản khi có
+      darkLogoUrl: 'https://sdvico.local/logo-dark.svg',
     },
     passwordPolicy: options.disablePwnedPasswordCheck
       ? {

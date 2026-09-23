@@ -79,7 +79,7 @@ export const parseHtmlTitle = (path: string) => {
     return;
   }
 
-  return 'Logto';
+  return 'sdvico';
 };
 
 export const codeVerificationTypeMap = Object.freeze({

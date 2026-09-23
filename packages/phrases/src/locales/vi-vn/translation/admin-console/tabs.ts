@@ -1,0 +1,25 @@
+const tabs = {
+  get_started: 'Bắt đầu',
+  dashboard: 'Bảng điều khiển',
+  applications: 'Ứng dụng',
+  api_resources: 'Tài nguyên API',
+  sign_in_experience: 'Đăng nhập & tài khoản',
+  connectors: 'Liên kết',
+  enterprise_sso: 'SSO doanh nghiệp',
+  security: 'Bảo mật',
+  webhooks: 'Webhook',
+  actions: 'Hành động',
+  organizations: 'Tổ chức',
+  users: 'Quản lý người dùng',
+  audit_logs: 'Nhật ký kiểm tra',
+  roles: 'Vai trò',
+  docs: 'Tài liệu',
+  tenant_settings: 'Cài đặt',
+  mfa: 'Xác thực đa yếu tố',
+  customize_jwt: 'JWT tùy chỉnh',
+  signing_keys: 'Khóa ký',
+  organization_template: 'Mẫu tổ chức',
+  iam_sync_users: 'Xem đồng bộ IAM',
+};
+
+export default Object.freeze(tabs);

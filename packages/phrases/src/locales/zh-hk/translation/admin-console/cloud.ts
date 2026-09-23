@@ -1,8 +1,4 @@
 const cloud = {
-  console_sso: {
-    title: '控制台 SSO',
-    description: '設定你自己的身份提供者，透過單一登入存取 Logto Console。',
-  },
   general: {
     onboarding: '入門',
   },

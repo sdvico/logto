@@ -56,20 +56,20 @@ export const defaultMetadata: ConnectorMetadata = {
       required: true,
       defaultValue: {
         SignIn: {
-          subject: 'Logto sign-in template {{code}}',
-          html: 'Your Logto sign-in verification code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico sign-in template {{code}}',
+          html: 'Your sdvico sign-in verification code is {{code}}. The code will remain active for 10 minutes.',
         },
         Register: {
-          subject: 'Logto sign-up template {{code}}',
-          html: 'Your Logto sign-up verification code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico sign-up template {{code}}',
+          html: 'Your sdvico sign-up verification code is {{code}}. The code will remain active for 10 minutes.',
         },
         ForgotPassword: {
-          subject: 'Logto reset password template {{code}}',
-          html: 'Your Logto reset password verification code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico reset password template {{code}}',
+          html: 'Your sdvico reset password verification code is {{code}}. The code will remain active for 10 minutes.',
         },
         Generic: {
-          subject: 'Logto generic template {{code}}',
-          html: 'Your Logto generic verification code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico generic template {{code}}',
+          html: 'Your sdvico generic verification code is {{code}}. The code will remain active for 10 minutes.',
         },
       },
     },

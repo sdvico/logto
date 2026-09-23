@@ -1,8 +1,8 @@
 services:
   - type: web
-    name: logto
+    name: sdvico
     env: docker
-    repo: https://github.com/logto-io/logto.git
+    repo: https://github.com/sdvico/logto.git
     region: oregon
     branch: master
     envVars:

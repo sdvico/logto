@@ -8,7 +8,7 @@ export const defaultMetadata: ConnectorMetadata = {
   target: 'logto-social-demo',
   platform: ConnectorPlatform.Universal,
   name: {
-    en: 'Logto Social Demo',
+    en: 'SDVICO Social Demo',
   },
   logo: './logo.svg',
   logoDark: null,

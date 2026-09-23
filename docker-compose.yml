@@ -4,6 +4,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    # Image Docker Hub công khai của dự án Logto gốc (chưa phải image riêng của sdvico).
+    # Cần build và publish image riêng cho sdvico trước khi dùng cho môi trường thật.
     image: svhd/logto:${TAG-latest}
     entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
     ports:

@@ -11,7 +11,6 @@ import { GlobalRoute, TenantsContext } from '@/contexts/TenantsProvider';
 import { createLocalCheckoutSession } from '@/utils/checkout';
 import { dropLeadingSlash } from '@/utils/url';
 
-import { useBillingCustomerChoice } from './use-billing-customer-choice';
 import useTenantPathname from './use-tenant-pathname';
 
 type SubscribeProps = {
@@ -36,10 +35,8 @@ const useSubscribe = () => {
     useContext(SubscriptionDataContext);
 
   const { getUrl } = useTenantPathname();
-  const { chooseBillingCustomer } = useBillingCustomerChoice();
   const [isSubscribeLoading, setIsSubscribeLoading] = useState(false);
 
-  /** Opens Stripe Checkout; resolves to `false` when it did not, e.g. the user cancelled. */
   const subscribe = async ({
     skuId,
     planId,
@@ -47,9 +44,9 @@ const useSubscribe = () => {
     tenantId,
     tenantData,
     isDowngrade = false,
-  }: SubscribeProps): Promise<boolean> => {
+  }: SubscribeProps) => {
     if (isSubscribeLoading) {
-      return false;
+      return;
     }
     setIsSubscribeLoading(true);
 
@@ -64,15 +61,8 @@ const useSubscribe = () => {
     ).href;
 
     try {
-      const customerChoice = await chooseBillingCustomer(tenantId);
-
-      if (!customerChoice) {
-        return false;
-      }
-
       const { redirectUri, sessionId } = await cloudApi.post('/api/checkout-session', {
         body: {
-          ...customerChoice,
           skuId,
           successCallbackUrl,
           tenantId,
@@ -84,7 +74,7 @@ const useSubscribe = () => {
 
       if (!redirectUri) {
         toast.error(t('general.unknown_error'));
-        return false;
+        return;
       }
 
       createLocalCheckoutSession({
@@ -95,7 +85,6 @@ const useSubscribe = () => {
       });
 
       window.location.assign(redirectUri);
-      return true;
     } finally {
       setIsSubscribeLoading(false);
     }

@@ -44,7 +44,9 @@ export default function koaSpaProxy<StateT, ContextT extends IRouterParamContext
           getConsoleLogFromContext(ctx).plain(`\tproxy --> ${target}`);
         },
         rewrite: (requestPath) => {
-          return '/' + path.join(prefix, requestPath);
+          // path.join uses the OS separator (backslash on Windows), which corrupts the URL —
+          // always use posix.join so the rewritten path stays forward-slash regardless of OS.
+          return '/' + path.posix.join(prefix, requestPath);
         },
       });
 

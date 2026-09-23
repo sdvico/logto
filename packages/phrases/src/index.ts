@@ -3,24 +3,11 @@ import { languages, findSupportedLanguageTag } from '@logto/language-kit';
 import type { DeepPartial, NormalizeKeyPaths } from '@silverhand/essentials';
 import { z } from 'zod';
 
-import ar from './locales/ar/index.js';
-import de from './locales/de/index.js';
 import en from './locales/en/index.js';
-import es from './locales/es/index.js';
-import faIR from './locales/fa-ir/index.js';
-import fr from './locales/fr/index.js';
-import it from './locales/it/index.js';
-import ja from './locales/ja/index.js';
-import ko from './locales/ko/index.js';
-import plPL from './locales/pl-pl/index.js';
-import ptBR from './locales/pt-br/index.js';
-import ptPT from './locales/pt-pt/index.js';
-import ru from './locales/ru/index.js';
-import th from './locales/th/index.js';
-import trTR from './locales/tr-tr/index.js';
-import zhCN from './locales/zh-cn/index.js';
-import zhHK from './locales/zh-hk/index.js';
-import zhTW from './locales/zh-tw/index.js';
+// Các locale gốc của Logto (ar, de, es, fa-ir, fr, it, ja, ko, pl-pl, pt-br, pt-pt, ru, th, tr-tr,
+// zh-cn, zh-hk, zh-tw) vẫn còn file dịch trên đĩa nhưng KHÔNG import/expose ở đây — sdvico chỉ
+// hỗ trợ 2 chế độ ngôn ngữ: English / Tiếng Việt. Khôi phục dễ dàng bằng cách import lại khi cần.
+import viVN from './locales/vi-vn/index.js';
 import type { LocalePhrase } from './types.js';
 
 export type { LocalePhrase } from './types.js';
@@ -28,26 +15,7 @@ export type { LocalePhrase } from './types.js';
 export type DefaultLocale = 'en';
 export type I18nKey = NormalizeKeyPaths<typeof en.translation>;
 
-export const builtInLanguages = [
-  'ar',
-  'de',
-  'en',
-  'es',
-  'fa-IR',
-  'fr',
-  'it',
-  'ja',
-  'ko',
-  'pl-PL',
-  'pt-BR',
-  'pt-PT',
-  'ru',
-  'th',
-  'tr-TR',
-  'zh-CN',
-  'zh-HK',
-  'zh-TW',
-] as const;
+export const builtInLanguages = ['en', 'vi-VN'] as const;
 
 export const builtInLanguageOptions = builtInLanguages.map((languageTag) => ({
   value: languageTag,
@@ -80,24 +48,8 @@ export type Resource = Record<
 };
 
 const resource: Resource = {
-  ar,
-  de,
   en,
-  es,
-  'fa-IR': faIR,
-  fr,
-  it,
-  ja,
-  ko,
-  'pl-PL': plPL,
-  'pt-BR': ptBR,
-  'pt-PT': ptPT,
-  ru,
-  th,
-  'tr-TR': trTR,
-  'zh-CN': zhCN,
-  'zh-HK': zhHK,
-  'zh-TW': zhTW,
+  'vi-VN': viVN,
 };
 
 export default resource;

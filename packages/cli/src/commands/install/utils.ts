@@ -66,7 +66,7 @@ export const inquireInstallPath = async (initialPath?: string) => {
   const { instancePath } = await inquirer.prompt<{ instancePath: string }>(
     {
       name: 'instancePath',
-      message: 'Where should we create your Logto instance?',
+      message: 'Where should we create your sdvico instance?',
       type: 'input',
       default: defaultPath,
       filter: (value: string) => value.trim(),
@@ -92,7 +92,7 @@ export const validateDatabase = async () => {
 
   const { hasPostgresUrl } = await inquirer.prompt<{ hasPostgresUrl?: boolean }>({
     name: 'hasPostgresUrl',
-    message: `Logto requires PostgreSQL >=${pgRequired.version} but cannot find in the current environment.\n  Do you have a remote PostgreSQL instance ready?`,
+    message: `sdvico requires PostgreSQL >=${pgRequired.version} but cannot find in the current environment.\n  Do you have a remote PostgreSQL instance ready?`,
     type: 'confirm',
     when: () => {
       const pgOutput = safeExecSync('postgres --version') ?? '';
@@ -105,7 +105,7 @@ export const validateDatabase = async () => {
   });
 
   if (hasPostgresUrl === false) {
-    consoleLog.fatal('Logto requires a Postgres instance to run.');
+    consoleLog.fatal('sdvico requires a Postgres instance to run.');
   }
 };
 
@@ -199,7 +199,7 @@ export const createEnv = async (installPath: string, databaseUrl: string) => {
 export const logFinale = (installPath: string) => {
   const startCommand = `cd ${installPath} && npm start`;
   consoleLog.info(
-    `Use the command below to start Logto. Happy hacking!\n\n  ${chalk.green(startCommand)}`
+    `Use the command below to start sdvico. Happy hacking!\n\n  ${chalk.green(startCommand)}`
   );
 };
 

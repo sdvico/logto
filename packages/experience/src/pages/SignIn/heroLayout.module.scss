@@ -1,0 +1,208 @@
+@use '@/shared/scss/underscore' as _;
+
+.page {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom right, #1c2b45 0%, #0f2f43 50%, #123a52 100%);
+  color: #ffffff;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: _.unit(5) _.unit(6);
+  flex-wrap: wrap;
+  gap: _.unit(3);
+  max-width: 1040px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.orgBlock {
+  display: flex;
+  align-items: center;
+  gap: _.unit(3);
+}
+
+.emblem {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.orgText {
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.orgTextStrong {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.systemTag {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #5eead4;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: _.unit(16);
+  padding: _.unit(8) _.unit(6);
+  width: 100%;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.hero {
+  flex: 0 1 460px;
+  min-width: 300px;
+}
+
+.markRow {
+  display: flex;
+  align-items: center;
+  gap: _.unit(3);
+  margin-bottom: _.unit(4);
+}
+
+.mark {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+}
+
+.markLabel {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.heading {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0 0 _.unit(4);
+}
+
+.highlight {
+  color: #5eead4;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0 0 _.unit(6);
+  max-width: 440px;
+}
+
+.badges {
+  display: flex;
+  align-items: center;
+  gap: _.unit(2);
+  flex-wrap: wrap;
+}
+
+.badge {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: _.unit(1) _.unit(3);
+  font-size: 12px;
+  font-weight: 500;
+  color: #eef4fa;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.arrow {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.card {
+  flex: 0 0 448px;
+  width: 448px;
+  max-width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: _.unit(8);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 50, 0.4);
+  color: var(--color-type-primary, #1f2937);
+}
+
+.cardIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #eef4fa;
+  color: #164865;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: _.unit(3);
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 _.unit(1);
+  color: #111827;
+}
+
+.cardSubtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 0 _.unit(5);
+}
+
+.cardFooter {
+  margin: _.unit(6) 0 0;
+  padding-top: _.unit(4);
+  border-top: 1px solid #f1f5f9;
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  padding: _.unit(5) _.unit(4);
+}
+
+@media only screen and (max-width: 860px) {
+  .content {
+    flex-direction: column;
+    gap: _.unit(8);
+    padding: _.unit(6) _.unit(5);
+  }
+
+  .hero {
+    text-align: center;
+  }
+
+  .description {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .badges {
+    justify-content: center;
+  }
+
+  .card {
+    width: 100%;
+  }
+}

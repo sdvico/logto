@@ -36,6 +36,26 @@
     }
   }
 
+  .primaryButton {
+    margin-top: _.unit(6);
+    width: 100%;
+    background: #0b5fa5;
+    border-color: #0b5fa5;
+    color: #ffffff;
+
+    &:hover {
+      background: #0e7dd8;
+    }
+  }
+
+  .brandMark {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #14b8a6, #1d4ed8);
+    margin: 0 auto;
+  }
+
 
   .card {
     background: var(--color-layer-1);
@@ -53,6 +73,26 @@
     .text {
       font: var(--font-body-2);
       color: var(--color-text-secondary);
+    }
+
+    &.landing {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      align-items: center;
+      text-align: center;
+      width: 420px;
+      max-width: calc(100vw - #{_.unit(8)});
+      padding: _.unit(10) _.unit(8);
+      transform: translate(-50%, -50%);
+
+      .title {
+        margin-top: _.unit(4);
+      }
+
+      .text {
+        margin-top: _.unit(2);
+      }
     }
 
     &.congrats {

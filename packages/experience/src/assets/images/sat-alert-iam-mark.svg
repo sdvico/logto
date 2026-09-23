@@ -1,0 +1,31 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="satAlertIamMarkGradient" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#14b8a6" />
+      <stop offset="1" stop-color="#1d4ed8" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#satAlertIamMarkGradient)" />
+  <path
+    d="M32 12 L47 17.5 V29.5 C47 40.5 41 47.5 32 51.5 C23 47.5 17 40.5 17 29.5 V17.5 Z"
+    fill="#ffffff"
+    fill-opacity="0.16"
+  />
+  <path
+    d="M32 12 L47 17.5 V29.5 C47 40.5 41 47.5 32 51.5 C23 47.5 17 40.5 17 29.5 V17.5 Z"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+  <circle cx="32" cy="27" r="5.5" fill="#ffffff" />
+  <rect x="29.5" y="31.5" width="5" height="9" rx="2.5" fill="#ffffff" />
+  <path
+    d="M14 46 Q22 41 32 46 T50 46"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="2"
+    stroke-linecap="round"
+    opacity="0.55"
+  />
+</svg>

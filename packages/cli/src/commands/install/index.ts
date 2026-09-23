@@ -77,17 +77,17 @@ const install: CommandModule<
   }
 > = {
   command: ['init', 'i', 'install'],
-  describe: 'Download and run the latest Logto release',
+  describe: 'Download and run the latest sdvico release',
   builder: (yargs) =>
     yargs.options({
       p: {
         alias: 'path',
-        describe: 'Path of Logto, must be a non-existing path',
+        describe: 'Path of sdvico, must be a non-existing path',
         type: 'string',
       },
       ss: {
         alias: 'skip-seed',
-        describe: 'Skip Logto database seeding',
+        describe: 'Skip sdvico database seeding',
         type: 'boolean',
         default: false,
       },
@@ -99,7 +99,7 @@ const install: CommandModule<
       },
       du: {
         alias: 'download-url',
-        describe: 'URL for downloading Logto, can be a local path to tar.',
+        describe: 'URL for downloading sdvico, can be a local path to tar.',
         type: 'string',
         hidden: true,
       },

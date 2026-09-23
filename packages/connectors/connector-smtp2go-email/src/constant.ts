@@ -40,7 +40,7 @@ export const defaultMetadata: ConnectorMetadata = {
       label: 'Sender Name',
       type: ConnectorConfigFormItemType.Text,
       required: false,
-      placeholder: 'Logto',
+      placeholder: 'sdvico',
     },
     {
       key: 'templates',
@@ -51,65 +51,65 @@ export const defaultMetadata: ConnectorMetadata = {
         {
           usageType: 'SignIn',
           type: 'text/plain',
-          subject: 'Logto Sign-In Verification Code',
+          subject: 'sdvico Sign-In Verification Code',
           content:
-            'Your Logto sign-in verification code is {{code}}. The code will remain active for 10 minutes.',
+            'Your sdvico sign-in verification code is {{code}}. The code will remain active for 10 minutes.',
         },
         {
           usageType: 'Register',
           type: 'text/plain',
-          subject: 'Logto Registration Verification Code',
+          subject: 'sdvico Registration Verification Code',
           content:
-            'Your Logto sign-up verification code is {{code}}. The code will remain active for 10 minutes.',
+            'Your sdvico sign-up verification code is {{code}}. The code will remain active for 10 minutes.',
         },
         {
           usageType: 'ForgotPassword',
           type: 'text/plain',
-          subject: 'Logto Password Reset Verification Code',
+          subject: 'sdvico Password Reset Verification Code',
           content:
-            'Your Logto password reset verification code is {{code}}. The code will remain active for 10 minutes.',
+            'Your sdvico password reset verification code is {{code}}. The code will remain active for 10 minutes.',
         },
         {
           usageType: 'OrganizationInvitation',
           type: 'text/plain',
-          subject: 'Logto Organization Invitation',
+          subject: 'sdvico Organization Invitation',
           content:
             'You have been invited to join an organization. Your invitation link is {{link}}.',
         },
         {
           usageType: 'Generic',
           type: 'text/plain',
-          subject: 'Logto Verification Code',
+          subject: 'sdvico Verification Code',
           content:
-            'Your Logto verification code is {{code}}. The code will remain active for 10 minutes.',
+            'Your sdvico verification code is {{code}}. The code will remain active for 10 minutes.',
         },
         {
           usageType: 'UserPermissionValidation',
           type: 'text/plain',
-          subject: 'Logto Permission Validation Code',
+          subject: 'sdvico Permission Validation Code',
           content:
-            'Your Logto permission validation code is {{code}}. The code will remain active for 10 minutes.',
+            'Your sdvico permission validation code is {{code}}. The code will remain active for 10 minutes.',
         },
         {
           usageType: 'BindNewIdentifier',
           type: 'text/plain',
-          subject: 'Logto New Identifier Binding Code',
+          subject: 'sdvico New Identifier Binding Code',
           content:
-            'Your Logto new identifier binding code is {{code}}. The code will remain active for 10 minutes.',
+            'Your sdvico new identifier binding code is {{code}}. The code will remain active for 10 minutes.',
         },
         {
           usageType: 'MfaVerification',
           type: 'text/plain',
-          subject: 'Logto MFA Verification Code',
+          subject: 'sdvico MFA Verification Code',
           content:
-            'Your Logto MFA verification code is {{code}}. The code will remain active for 10 minutes.',
+            'Your sdvico MFA verification code is {{code}}. The code will remain active for 10 minutes.',
         },
         {
           usageType: 'BindMfa',
           type: 'text/plain',
-          subject: 'Logto 2-Step Verification Setup Code',
+          subject: 'sdvico 2-Step Verification Setup Code',
           content:
-            'Your Logto 2-step verification setup code is {{code}}. The code will remain active for 10 minutes.',
+            'Your sdvico 2-step verification setup code is {{code}}. The code will remain active for 10 minutes.',
         },
       ],
     },

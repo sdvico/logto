@@ -59,6 +59,12 @@ const buildConfig = (mode: string): UserConfig => ({
     'import.meta.env.LOGTO_OSS_SURVEY_ENDPOINT': JSON.stringify(
       process.env.LOGTO_OSS_SURVEY_ENDPOINT
     ),
+    // sdvico: an, hien lai muc nao trong sidebar qua bien moi trong .env goc repo, khong dong
+    // code - xem HIDDEN_SIDEBAR_SECTIONS / HIDDEN_SIDEBAR_ITEMS trong .env va env.ts.
+    'import.meta.env.HIDDEN_SIDEBAR_SECTIONS': JSON.stringify(
+      process.env.HIDDEN_SIDEBAR_SECTIONS
+    ),
+    'import.meta.env.HIDDEN_SIDEBAR_ITEMS': JSON.stringify(process.env.HIDDEN_SIDEBAR_ITEMS),
     // `@withtyped/client` needs this to be defined. We can optimize this later.
     'process.env': {},
   },

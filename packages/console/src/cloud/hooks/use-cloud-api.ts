@@ -1,9 +1,5 @@
 import type router from '@logto/cloud/routes';
-import {
-  type emailLogsRouter,
-  type tenantAuthRouter,
-  type userStripeCustomersRouter,
-} from '@logto/cloud/routes';
+import { type emailLogsRouter, type tenantAuthRouter } from '@logto/cloud/routes';
 import { useLogto } from '@logto/react';
 import { getTenantOrganizationId } from '@logto/schemas';
 import { conditional, trySafe } from '@silverhand/essentials';
@@ -49,7 +45,7 @@ type UseCloudApiProps = {
  * type-instantiation depth limit), so the client type is selected per call site instead of
  * intersecting them.
  */
-type ConsoleCloudRouter = typeof router | typeof emailLogsRouter | typeof userStripeCustomersRouter;
+type ConsoleCloudRouter = typeof router | typeof emailLogsRouter;
 
 export const useCloudApi = <R extends ConsoleCloudRouter = typeof router>({
   hideErrorToast = false,

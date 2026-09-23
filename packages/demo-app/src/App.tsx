@@ -38,6 +38,17 @@ const Main = () => {
     });
   }, []);
 
+  const handleSignIn = useCallback(async () => {
+    const extraParams = Object.fromEntries(
+      new URLSearchParams([
+        ...new URLSearchParams(config.signInExtraParams).entries(),
+        ...new URLSearchParams(window.location.search).entries(),
+      ]).entries()
+    );
+
+    await signIn({ redirectUri, extraParams });
+  }, [config.signInExtraParams, redirectUri, signIn]);
+
   useEffect(() => {
     if (isInCallback || isLoading || error) {
       return;
@@ -58,19 +69,14 @@ const Main = () => {
       void loadIdTokenClaims();
     }
 
-    const extraParams = Object.fromEntries(
-      new URLSearchParams([
-        ...new URLSearchParams(config.signInExtraParams).entries(),
-        ...new URLSearchParams(window.location.search).entries(),
-      ]).entries()
-    );
-
-    // If user is not authenticated, redirect to sign-in page
-    if (!isAuthenticated) {
-      void signIn({ redirectUri, extraParams });
-    }
-
     if (isAuthenticated && hasMagicLinkParams) {
+      const extraParams = Object.fromEntries(
+        new URLSearchParams([
+          ...new URLSearchParams(config.signInExtraParams).entries(),
+          ...new URLSearchParams(window.location.search).entries(),
+        ]).entries()
+      );
+
       void signIn({
         clearTokens: false,
         redirectUri,
@@ -146,7 +152,28 @@ const Main = () => {
     );
   }
 
-  if (!isAuthenticated || !user) {
+  if (!isAuthenticated) {
+    return (
+      <div className={styles.app}>
+        <div className={[styles.card, styles.landing].join(' ')}>
+          <div className={styles.brandMark} aria-hidden />
+          <div className={styles.title}>{t('landing_title')}</div>
+          <div className={styles.text}>{t('landing_subtitle')}</div>
+          <button
+            type="button"
+            className={[styles.button, styles.primaryButton].join(' ')}
+            onClick={() => {
+              void handleSignIn();
+            }}
+          >
+            {t('login_button')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
     return null;
   }
 

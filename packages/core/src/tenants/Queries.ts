@@ -19,6 +19,7 @@ import { createLogtoConfigQueries } from '#src/queries/logto-config.js';
 import { createOidcModelInstanceQueries } from '#src/queries/oidc-model-instance.js';
 import { createOneTimeTokenQueries } from '#src/queries/one-time-tokens.js';
 import OrganizationQueries from '#src/queries/organization/index.js';
+import PermissionAuditSnapshotQueries from '#src/queries/permission-audit-snapshots.js';
 import { createPasscodeQueries } from '#src/queries/passcode.js';
 import { createResourceQueries } from '#src/queries/resource.js';
 import { createRolesScopesQueries } from '#src/queries/roles-scopes.js';
@@ -78,6 +79,7 @@ export default class Queries {
   dailyActiveUsers = createDailyActiveUsersQueries(this.pool);
   dailyTokenUsage = createDailyTokenUsageQueries(this.pool);
   organizations = new OrganizationQueries(this.pool);
+  permissionAuditSnapshots = new PermissionAuditSnapshotQueries(this.pool);
   ssoConnectors = new SsoConnectorQueries(this.pool);
   userSsoIdentities = new UserSsoIdentityQueries(this.pool);
   userSignInCountries = createUserSignInCountriesQueries(this.pool);

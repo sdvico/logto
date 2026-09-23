@@ -1,5 +1,4 @@
 const menu = {
-  single_sign_on: '싱글 사인온',
   profile: '프로필',
   language: '언어',
   appearance: {

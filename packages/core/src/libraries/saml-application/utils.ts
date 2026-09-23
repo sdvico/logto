@@ -50,11 +50,12 @@ const createCertificate = (keypair: forge.pki.KeyPair, lifeSpanInYears: number) 
   const identityAttributes: forge.pki.CertificateField[] = [
     {
       name: 'commonName',
-      value: 'logto.io',
+      // PLACEHOLDER domain — replace with the real operating domain before production use.
+      value: 'auth.sdvico.local',
     },
     {
       name: 'organizationName',
-      value: 'Logto',
+      value: 'Sdvico',
     },
     {
       name: 'countryName',

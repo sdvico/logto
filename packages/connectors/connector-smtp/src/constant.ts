@@ -69,64 +69,64 @@ export const defaultMetadata: ConnectorMetadata = {
         {
           contentType: 'text/plain',
           content:
-            'Your Logto sign-in verification code is {{code}}. The code will remain active for 10 minutes.',
-          subject: 'Logto Sign In with SMTP',
+            'Your sdvico sign-in verification code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico Sign In with SMTP',
           usageType: 'SignIn',
         },
         {
           contentType: 'text/plain',
           content:
-            'Your Logto sign-up verification code is {{code}}. The code will remain active for 10 minutes.',
-          subject: 'Logto register with SMTP',
+            'Your sdvico sign-up verification code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico register with SMTP',
           usageType: 'Register',
         },
         {
           contentType: 'text/plain',
           content:
-            'Your Logto password change verification code is {{code}}. The code will remain active for 10 minutes.',
-          subject: 'Logto Forgot Password with SMTP',
+            'Your sdvico password change verification code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico Forgot Password with SMTP',
           usageType: 'ForgotPassword',
         },
         {
           contentType: 'text/plain',
           content:
-            'Your Logto organization invitation code is {{code}}. The code will remain active for 10 minutes.',
-          subject: 'Logto OrganizationInvitation with SMTP',
+            'Your sdvico organization invitation code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico OrganizationInvitation with SMTP',
           usageType: 'OrganizationInvitation',
         },
         {
           contentType: 'text/plain',
           content:
-            'Your Logto verification code is {{code}}. The code will remain active for 10 minutes.',
-          subject: 'Logto Generic with SMTP',
+            'Your sdvico verification code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico Generic with SMTP',
           usageType: 'Generic',
         },
         {
           contentType: 'text/plain',
           content:
-            'Your Logto permission validation code is {{code}}. The code will remain active for 10 minutes.',
-          subject: 'Logto UserPermissionValidation with SMTP',
+            'Your sdvico permission validation code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico UserPermissionValidation with SMTP',
           usageType: 'UserPermissionValidation',
         },
         {
           contentType: 'text/plain',
           content:
-            'Your Logto new identifier binding code is {{code}}. The code will remain active for 10 minutes.',
-          subject: 'Logto BindNewIdentifier with SMTP',
+            'Your sdvico new identifier binding code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico BindNewIdentifier with SMTP',
           usageType: 'BindNewIdentifier',
         },
         {
           contentType: 'text/plain',
           content:
-            'Your Logto MFA verification code is {{code}}. The code will remain active for 10 minutes.',
-          subject: 'Logto MfaVerification with SMTP',
+            'Your sdvico MFA verification code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico MfaVerification with SMTP',
           usageType: 'MfaVerification',
         },
         {
           contentType: 'text/plain',
           content:
-            'Your Logto 2-step verification setup code is {{code}}. The code will remain active for 10 minutes.',
-          subject: 'Logto BindMfa with SMTP',
+            'Your sdvico 2-step verification setup code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'sdvico BindMfa with SMTP',
           usageType: 'BindMfa',
         },
       ],
@@ -168,7 +168,7 @@ export const defaultMetadata: ConnectorMetadata = {
       label: 'Name',
       type: ConnectorConfigFormItemType.Text,
       required: false,
-      placeholder: '<Logto-SMTP>',
+      placeholder: '<sdvico-SMTP>',
     },
     {
       key: 'localAddress',

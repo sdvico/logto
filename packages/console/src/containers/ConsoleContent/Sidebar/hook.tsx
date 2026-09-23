@@ -20,6 +20,7 @@ import SecurityLock from '@/assets/icons/security-lock.svg?react';
 import Security from '@/assets/icons/security.svg?react';
 import EnterpriseSso from '@/assets/icons/single-sign-on.svg?react';
 import Web from '@/assets/icons/web.svg?react';
+import { hiddenSidebarItems, hiddenSidebarSections } from '@/consts/env';
 import useIsActionsEnabled from '@/hooks/use-is-actions-enabled';
 
 type SidebarItem = {
@@ -52,6 +53,9 @@ export const useSidebarMenuItems = (): {
   firstItem: Optional<SidebarItem>;
 } => {
   const isActionsEnabled = useIsActionsEnabled();
+  // sdvico: an muc nao trong sidebar theo cau hinh .env (HIDDEN_SIDEBAR_ITEMS), khong xoa code -
+  // xem consts/env.ts. Vi tri de mo lai: xoa key tuong ung khoi bien .env, khong can sua file nay.
+  const isItemHiddenByConfig = (title: string) => hiddenSidebarItems.includes(title);
   const allSections: SidebarSection[] = [
     {
       title: 'overview',
@@ -59,6 +63,7 @@ export const useSidebarMenuItems = (): {
         {
           Icon: Bolt,
           title: 'get_started',
+          isHidden: isItemHiddenByConfig('get_started'),
         },
         {
           Icon: BarGraph,
@@ -86,10 +91,12 @@ export const useSidebarMenuItems = (): {
         {
           Icon: Connection,
           title: 'connectors',
+          isHidden: isItemHiddenByConfig('connectors'),
         },
         {
           Icon: EnterpriseSso,
           title: 'enterprise_sso',
+          isHidden: isItemHiddenByConfig('enterprise_sso'),
         },
         {
           Icon: Security,
@@ -111,6 +118,7 @@ export const useSidebarMenuItems = (): {
         {
           Icon: OrganizationTemplate,
           title: 'organization_template',
+          isHidden: isItemHiddenByConfig('organization_template'),
         },
       ],
     },
@@ -124,6 +132,11 @@ export const useSidebarMenuItems = (): {
         {
           Icon: UserProfile,
           title: 'users',
+        },
+        {
+          Icon: List,
+          title: 'iam_sync_users',
+          path: 'iam-sync-users',
         },
       ],
     },
@@ -140,10 +153,12 @@ export const useSidebarMenuItems = (): {
         {
           Icon: JwtClaims,
           title: 'customize_jwt',
+          isHidden: isItemHiddenByConfig('customize_jwt'),
         },
         {
           Icon: Hook,
           title: 'webhooks',
+          isHidden: isItemHiddenByConfig('webhooks'),
         },
         {
           Icon: List,
@@ -162,7 +177,9 @@ export const useSidebarMenuItems = (): {
     },
   ];
 
-  const enabledSections = allSections.filter((section) => !section.isHidden);
+  const enabledSections = allSections.filter(
+    (section) => !section.isHidden && !hiddenSidebarSections.includes(section.title)
+  );
 
   return { sections: enabledSections, firstItem: findFirstItem(enabledSections) };
 };

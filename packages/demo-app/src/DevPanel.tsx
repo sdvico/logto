@@ -52,7 +52,7 @@ const DevPanel = () => {
       {isDevFeaturesEnabled && error && <div role="alert">Last SDK error: {error.message}</div>}
       {isDevFeaturesEnabled && <StepUpForm />}
       <form onSubmit={submitConfig}>
-        <div className={styles.title}>Logto config</div>
+        <div className={styles.title}>App config</div>
         <div className={styles.item}>
           <div className={styles.text}>App ID</div>
           <input

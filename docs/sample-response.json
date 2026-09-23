@@ -1,0 +1,105 @@
+{
+  "data": [
+    {
+      "id": "user-truong-qn",
+      "username": "truongban.qn",
+      "name": "Nguyễn Văn Test1",
+      "email": "truongban.qn@example-test.vn",
+      "status": "active",
+      "organizations": [
+        {
+          "id": "org-qn",
+          "name": "Chi cục Thủy sản Quảng Ninh"
+        }
+      ],
+      "roles": [
+        {
+          "code": "TRUONG",
+          "name": "Trưởng"
+        }
+      ],
+      "permissions": [
+        "iuu:read",
+        "iuu:update"
+      ],
+      "scopes": [
+        {
+          "type": "province",
+          "id": "22"
+        },
+        {
+          "type": "port",
+          "id": "QN01"
+        }
+      ],
+      "external_ids": {},
+      "updated_at": "2026-09-22T03:32:00.313Z"
+    },
+    {
+      "id": "user-cv-qn",
+      "username": "chuyenvien.qn",
+      "name": "Trần Thị Test2",
+      "email": "chuyenvien.qn@example-test.vn",
+      "status": "active",
+      "organizations": [
+        {
+          "id": "org-qn",
+          "name": "Chi cục Thủy sản Quảng Ninh"
+        }
+      ],
+      "roles": [
+        {
+          "code": "CHUYEN_VIEN",
+          "name": "Chuyên viên"
+        }
+      ],
+      "permissions": [
+        "iuu:read"
+      ],
+      "scopes": [
+        {
+          "type": "province",
+          "id": "22"
+        },
+        {
+          "type": "ward",
+          "id": "QN001"
+        }
+      ],
+      "external_ids": {},
+      "updated_at": "2026-09-22T03:32:00.313Z"
+    },
+    {
+      "id": "u-chinnd-tho",
+      "username": "chinnd-THO",
+      "name": "Nguyễn Đức Chín",
+      "email": "ducchinh030272@gmail.com",
+      "status": "active",
+      "organizations": [
+        {
+          "id": "org-chi-cuc-bien-ao-",
+          "name": "Chi cục Biển đảo và Thủy sản thành phố Đà Nẵng"
+        }
+      ],
+      "roles": [
+        {
+          "code": "CHUYEN_VIEN",
+          "name": "Chuyên viên"
+        }
+      ],
+      "permissions": [
+        "iuu:read"
+      ],
+      "scopes": [
+        {
+          "type": "port",
+          "id": "org-ban-quan-ly-au-t"
+        }
+      ],
+      "external_ids": {
+        "nkkt": "NKKT-00042"
+      },
+      "updated_at": "2026-09-22T04:11:37.303Z"
+    }
+  ]
+}

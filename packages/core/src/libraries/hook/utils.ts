@@ -92,7 +92,7 @@ export const sendWebhookRequest = async ({
 
   return ky.post(url, {
     headers: {
-      'user-agent': 'Logto (https://logto.io/)',
+      'user-agent': 'Sdvico (https://sdvico.local/)',
       ...headers,
       ...conditional(signingKey && { 'logto-signature-sha-256': sign(signingKey, payload) }),
     },

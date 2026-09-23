@@ -1,9 +1,4 @@
 const cloud = {
-  console_sso: {
-    title: 'SSO della console',
-    description:
-      'Configura il tuo provider di identità per accedere a Logto Console con il single sign-on.',
-  },
   general: {
     onboarding: 'Inizio',
   },

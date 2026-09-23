@@ -14,7 +14,6 @@ import { generateUsername } from '#src/utils.js';
 
 export const createUserByAdmin = async (
   payload: {
-    id?: string;
     username?: string;
     password?: string;
     primaryEmail?: string;

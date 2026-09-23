@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 
 import styles from './App.module.scss';
-import logtoLogoDark from './assets/logto-logo-dark.svg';
-import logtoLogoLight from './assets/logto-logo-light.svg';
-import logtoLogoShadow from './assets/logto-logo-shadow.svg';
+import logtoLogoDark from './assets/sdvico-logo-dark.svg';
+import logtoLogoLight from './assets/sdvico-logo-light.svg';
+import logtoLogoShadow from './assets/sdvico-logo-shadow.svg';
 
-const logtoUrl = `https://logto.io/?${new URLSearchParams({
+const logtoUrl = `https://sdvico.example.com/?${new URLSearchParams({
   utm_source: 'sign_in',
   utm_medium: 'powered_by',
 }).toString()}`;
@@ -36,14 +36,14 @@ const Footer = ({ isDarkMode }: { readonly isDarkMode: boolean }) => (
       href={logtoUrl}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Powered By Logto"
+      aria-label="Powered By sdvico"
     >
       <span>Powered by</span>
-      <img className={styles.staticLogo} src={logtoLogoShadow} alt="Logto" />
+      <img className={styles.staticLogo} src={logtoLogoShadow} alt="sdvico" />
       <img
         className={styles.highlightLogo}
         src={isDarkMode ? logtoLogoDark : logtoLogoLight}
-        alt="Logto"
+        alt="sdvico"
       />
     </a>
   </div>

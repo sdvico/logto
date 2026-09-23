@@ -1,5 +1,4 @@
 const menu = {
-  single_sign_on: 'シングルサインオン',
   profile: 'プロフィール',
   language: '言語',
   appearance: {

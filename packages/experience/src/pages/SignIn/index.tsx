@@ -3,7 +3,6 @@ import { useCallback, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useSearchParams } from 'react-router-dom';
 
-import LandingPageLayout from '@/Layout/LandingPageLayout';
 import SingleSignOnFormModeContextProvider from '@/Providers/SingleSignOnFormModeContextProvider';
 import SingleSignOnFormModeContext from '@/Providers/SingleSignOnFormModeContextProvider/SingleSignOnFormModeContext';
 import WebAuthnContextProvider from '@/Providers/WebAuthnContextProvider';
@@ -20,6 +19,7 @@ import useTerms from '@/hooks/use-terms';
 
 import ErrorPage from '../ErrorPage';
 
+import HeroLayout from './HeroLayout';
 import Main from './Main';
 import styles from './index.module.scss';
 
@@ -124,7 +124,7 @@ const SignIn = () => {
   }
 
   return (
-    <LandingPageLayout title="description.sign_in_to_your_account">
+    <HeroLayout title="description.sign_in_to_your_account">
       <GoogleOneTap context="signin" />
       <WebAuthnContextProvider>
         <SingleSignOnFormModeContextProvider>
@@ -138,7 +138,7 @@ const SignIn = () => {
           <TermsAndPrivacyLinks className={styles.terms} />
         )
       }
-    </LandingPageLayout>
+    </HeroLayout>
   );
 };
 

@@ -1,6 +1,6 @@
 # Account Center
 
-The Logto account center app that allows users to manage their account settings, profile, and security options.
+The sdvico account center app that allows users to manage their account settings, profile, and security options.
 
 ## Authentication Behavior
 
