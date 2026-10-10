@@ -1,3 +1,4 @@
+import { type Nullable } from '@silverhand/essentials';
 import useSWR from 'swr';
 
 import PageMeta from '@/components/PageMeta';
@@ -8,21 +9,21 @@ import styles from './index.module.scss';
 
 type SyncUser = {
   id: string;
-  username: string | null;
-  name: string | null;
+  username: Nullable<string>;
+  name: Nullable<string>;
   status: 'active' | 'suspended';
   organizations: Array<{ id: string; name: string }>;
-  roles: Array<{ code: string; name: string }>;
+  roles: Array<{ code: string; name: string; organizationId?: string }>;
   scopes: Array<{ type: string; id: string }>;
   updated_at: string;
 };
 
 /**
- * sdvico: man hinh xem nhanh du lieu ma IAM Sync API (`/api/iam-sync-preview/users`) tra ve cho
+ * Sdvico: man hinh xem nhanh du lieu ma IAM Sync API (`/api/iam-sync-preview/users`) tra ve cho
  * cac he thong ngoai (Sat Alert/eLogbook/IUU) — chi doc, dung session admin thuong, khong qua M2M
  * token. Xem docs/iam-sync-api-design.md.
  */
-const IamSyncUsers = () => {
+function IamSyncUsers() {
   const { data, error } = useSWR<{ data: SyncUser[] }, RequestError>('api/iam-sync-preview/users');
   const isLoading = !data && !error;
 
@@ -66,8 +67,12 @@ const IamSyncUsers = () => {
                   </td>
                   <td>
                     {user.roles.map((role) => (
-                      <span key={role.code} className={styles.pill}>
+                      <span
+                        key={`${role.organizationId ?? ''}-${role.code}`}
+                        className={styles.pill}
+                      >
                         {role.name}
+                        {role.organizationId && ` · ${role.organizationId}`}
                       </span>
                     ))}
                   </td>
@@ -87,6 +92,6 @@ const IamSyncUsers = () => {
       </div>
     </div>
   );
-};
+}
 
 export default IamSyncUsers;

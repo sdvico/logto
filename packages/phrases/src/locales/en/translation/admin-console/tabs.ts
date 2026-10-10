@@ -20,6 +20,7 @@ const tabs = {
   signing_keys: 'Signing keys',
   organization_template: 'Organization template',
   iam_sync_users: 'IAM sync preview',
+  iam_staff_import: 'Import staff from MKN',
 };
 
 export default Object.freeze(tabs);

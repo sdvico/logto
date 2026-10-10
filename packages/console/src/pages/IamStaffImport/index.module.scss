@@ -1,0 +1,119 @@
+.container {
+  padding: var(--pad-lg, 24px);
+}
+
+.subtitle {
+  color: var(--text-secondary, #6e787e);
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-secondary, #6e787e);
+}
+
+.activeStep {
+  color: var(--text-accent, #3a3ae0);
+  font-weight: 600;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.summary {
+  flex: 1;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th,
+  td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border, #e5e8eb);
+    vertical-align: top;
+  }
+
+  th {
+    font-weight: 500;
+    color: var(--text-secondary, #6e787e);
+  }
+}
+
+.excluded td {
+  opacity: 50%;
+}
+
+.usernameInput {
+  width: 160px;
+  padding: 4px 6px;
+  font-size: 13px;
+}
+
+.muted {
+  color: var(--text-secondary, #6e787e);
+  font-size: 11px;
+}
+
+.pill {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: var(--bg-accent, #eef1ff);
+  color: var(--text-accent, #3a3ae0);
+  font-size: 11px;
+  margin: 0 4px 2px 0;
+}
+
+.pillRemove {
+  margin-left: 4px;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.issues {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 12px;
+}
+
+.error {
+  color: var(--text-danger, #c0392b);
+}
+
+.warning {
+  color: var(--text-warning, #b26a00);
+}
+
+.info {
+  color: var(--text-secondary, #6e787e);
+}
+
+.ok {
+  color: var(--text-success, #2e7d32);
+}
+
+.picker {
+  min-width: 220px;
+  margin-top: 4px;
+}

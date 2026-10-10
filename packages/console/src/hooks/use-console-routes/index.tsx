@@ -26,6 +26,7 @@ import { webhooks } from './routes/webhooks';
 const Dashboard = safeLazy(async () => import('@/pages/Dashboard'));
 const GetStarted = safeLazy(async () => import('@/pages/GetStarted'));
 const IamSyncUsers = safeLazy(async () => import('@/pages/IamSyncUsers'));
+const IamStaffImport = safeLazy(async () => import('@/pages/IamStaffImport'));
 
 export const useConsoleRoutes = () => {
   const tenantSettings = useTenantSettings();
@@ -53,6 +54,7 @@ export const useConsoleRoutes = () => {
         organizationTemplate,
         organizations,
         { path: 'iam-sync-users', element: <IamSyncUsers /> },
+        { path: 'iam-staff-import', element: <IamStaffImport /> },
         {
           path: 'signing-keys',
           // Deprecated page, redirect to oidc-configs in the tenant settings page.

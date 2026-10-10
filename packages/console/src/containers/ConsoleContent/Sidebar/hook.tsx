@@ -48,14 +48,15 @@ const findFirstItem = (sections: SidebarSection[]): Optional<SidebarItem> => {
   }
 };
 
+// Sdvico: an muc nao trong sidebar theo cau hinh .env (HIDDEN_SIDEBAR_ITEMS), khong xoa code -
+// xem consts/env.ts. Vi tri de mo lai: xoa key tuong ung khoi bien .env, khong can sua file nay.
+const isItemHiddenByConfig = (title: string) => hiddenSidebarItems.includes(title);
+
 export const useSidebarMenuItems = (): {
   sections: SidebarSection[];
   firstItem: Optional<SidebarItem>;
 } => {
   const isActionsEnabled = useIsActionsEnabled();
-  // sdvico: an muc nao trong sidebar theo cau hinh .env (HIDDEN_SIDEBAR_ITEMS), khong xoa code -
-  // xem consts/env.ts. Vi tri de mo lai: xoa key tuong ung khoi bien .env, khong can sua file nay.
-  const isItemHiddenByConfig = (title: string) => hiddenSidebarItems.includes(title);
   const allSections: SidebarSection[] = [
     {
       title: 'overview',
@@ -137,6 +138,11 @@ export const useSidebarMenuItems = (): {
           Icon: List,
           title: 'iam_sync_users',
           path: 'iam-sync-users',
+        },
+        {
+          Icon: List,
+          title: 'iam_staff_import',
+          path: 'iam-staff-import',
         },
       ],
     },

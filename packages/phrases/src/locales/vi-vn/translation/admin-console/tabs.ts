@@ -20,6 +20,7 @@ const tabs = {
   signing_keys: 'Khóa ký',
   organization_template: 'Mẫu tổ chức',
   iam_sync_users: 'Xem đồng bộ IAM',
+  iam_staff_import: 'Nhập cán bộ từ MKN',
 };
 
 export default Object.freeze(tabs);
