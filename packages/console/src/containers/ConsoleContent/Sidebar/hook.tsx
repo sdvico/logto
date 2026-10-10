@@ -144,6 +144,11 @@ export const useSidebarMenuItems = (): {
           title: 'iam_staff_import',
           path: 'iam-staff-import',
         },
+        {
+          Icon: List,
+          title: 'iam_systems',
+          path: 'iam-systems',
+        },
       ],
     },
     {

@@ -1,7 +1,7 @@
 /**
  * SDVICO: chạy nhập cho các dòng đã chọn — GỌI LẠI Management API có sẵn cho từng dòng, giống
- * "Tạo hàng loạt" của MKN (fe-admin `bulk/runCreate.ts`): tạo người → khoá nếu MKN không ACTIVE →
- * thêm vào tổ chức → gán chức danh.
+ * "Tạo hàng loạt" của MKN (fe-admin `bulk/runCreate.ts`). Tạo mới: tạo người → khoá nếu hệ nguồn không
+ * ACTIVE → thêm vào tổ chức → gán chức danh. Nối: chỉ ghi `externalIds.<khoá hệ>` lên người đã có.
  *
  * Không làm endpoint `bulk` ở máy chủ: đường tạo người dùng đã có đủ kiểm trùng, băm mật khẩu, nhật ký.
  * Không có transaction bao cả lô: dòng hỏng thì hỏng một mình, màn hình cho chạy lại đúng dòng đó.
@@ -11,16 +11,21 @@
 import { type UserProfileResponse } from '@logto/schemas';
 import { HTTPError, type KyInstance } from 'ky';
 
-import { isSuspendedInMkn } from './review-rules';
+import { externalIdsOf } from './lookup';
+import { isLinking, isSuspendedInSource } from './review-rules';
 import { type DraftRow, type ImportLookup } from './staff-rows';
 
 /** Số dòng chạy cùng lúc; đủ nhanh mà không dồn máy chủ. */
 const concurrency = 4;
 
+/** Việc đã làm với dòng: tạo mới, nối vào người đã có, bổ sung cho người đã nhập trước. */
+export type RowOutcomeAction = 'create' | 'link' | 'update';
+
 export type RowOutcome = {
   line: number;
   username: string;
-  mknAccountId: string;
+  sourceAccountId: string;
+  action: RowOutcomeAction;
   ok: boolean;
   userId?: string;
   /** Người đã được tạo nhưng bước sau hỏng: chạy lại sẽ tiếp tục từ người này. */
@@ -69,13 +74,14 @@ const droppableFields: Readonly<Record<string, 'email' | 'phone'>> = Object.free
 const createUser = async (
   api: KyInstance,
   draft: DraftRow,
+  sourceKey: string,
   dropped: ReadonlySet<'email' | 'phone'> = new Set()
 ): Promise<{ userId: string; warnings: string[] }> => {
   const { source } = draft;
   const email = dropped.has('email') ? undefined : draft.email;
   const phone = dropped.has('phone') ? undefined : draft.phone;
-  // Tài khoản bị khoá ở MKN: không mang mật khẩu, để bước khoá có hỏng cũng không ai đăng nhập được.
-  const digest = isSuspendedInMkn(draft) ? undefined : source.passwordBcrypt;
+  // Tài khoản bị khoá ở hệ nguồn: không mang mật khẩu, để bước khoá có hỏng cũng không ai đăng nhập được.
+  const digest = isSuspendedInSource(draft) ? undefined : source.passwordBcrypt;
 
   try {
     const user = await api
@@ -86,7 +92,7 @@ const createUser = async (
           ...(email ? { primaryEmail: email } : {}),
           ...(phone ? { primaryPhone: phone } : {}),
           ...(digest ? { passwordDigest: digest, passwordAlgorithm: 'Bcrypt' } : {}),
-          customData: { externalIds: { mkn: source.mknAccountId } },
+          customData: { externalIds: { [sourceKey]: source.sourceAccountId } },
         },
       })
       .json<UserProfileResponse>();
@@ -105,7 +111,7 @@ const createUser = async (
   } catch (error: unknown) {
     const field = droppableFields[(await errorCodeOf(error)) ?? ''];
     if (field && !dropped.has(field)) {
-      return createUser(api, draft, new Set([...dropped, field]));
+      return createUser(api, draft, sourceKey, new Set([...dropped, field]));
     }
     throw error;
   }
@@ -119,7 +125,7 @@ const grantAccess = async (
   userId: string
 ) => {
   // Chỉ khoá người do lượt nhập này tạo (kể cả lần chạy lại); người đã nhập trước giữ trạng thái IAM.
-  if (!draft.existingUserId && isSuspendedInMkn(draft)) {
+  if (!draft.existingUserId && isSuspendedInSource(draft)) {
     await api.patch(`api/users/${userId}/is-suspended`, { json: { isSuspended: true } });
   }
 
@@ -134,6 +140,26 @@ const grantAccess = async (
       });
     }
   }
+};
+
+/**
+ * Ghi mã hệ nguồn lên người đã có. Đọc lại custom data ngay trước khi ghi (PATCH chỉ gộp ở cấp ngoài
+ * cùng nên phải gửi đủ `externalIds`), và giữ luật 1–1: người đã mang mã khác của hệ này thì không ghi.
+ */
+const linkUser = async (api: KyInstance, userId: string, sourceKey: string, sourceId: string) => {
+  const { customData } = await api.get(`api/users/${userId}`).json<UserProfileResponse>();
+  const externalIds = externalIdsOf(customData);
+  const current = externalIds[sourceKey];
+
+  if (current && current !== sourceId) {
+    throw new Error(
+      `Người IAM này đã nối với tài khoản ${sourceKey} khác (${current}); không ghi đè.`
+    );
+  }
+
+  await api.patch(`api/users/${userId}/custom-data`, {
+    json: { customData: { externalIds: { ...externalIds, [sourceKey]: sourceId } } },
+  });
 };
 
 type RunOptions = {
@@ -151,27 +177,44 @@ const importRow = async (
   const base = {
     line: draft.source.line,
     username: draft.username,
-    mknAccountId: draft.source.mknAccountId,
+    sourceAccountId: draft.source.sourceAccountId,
   };
+
+  if (isLinking(draft)) {
+    const userId = draft.match?.user.id;
+    const linked = { ...base, action: 'link' as const, username: draft.match?.user.username ?? '' };
+    if (!userId) {
+      return { ...linked, ok: false, error: 'Không có người IAM nào để nối.' };
+    }
+    try {
+      await linkUser(api, userId, lookup.source.key, draft.source.sourceAccountId);
+      return { ...linked, ok: true, userId };
+    } catch (error: unknown) {
+      return { ...linked, ok: false, error: await errorMessageOf(error) };
+    }
+  }
+
+  const action: RowOutcomeAction = draft.existingUserId ? 'update' : 'create';
   const knownUserId = createdUserIds.get(draft.source.line) ?? draft.existingUserId;
 
   const created = await (knownUserId
     ? { userId: knownUserId, warnings: [] }
-    : createUser(api, draft).catch(async (error: unknown) => ({
+    : createUser(api, draft, lookup.source.key).catch(async (error: unknown) => ({
         error: await errorMessageOf(error),
       })));
 
   if ('error' in created) {
-    return { ...base, ok: false, error: created.error };
+    return { ...base, action, ok: false, error: created.error };
   }
 
   const { userId, warnings } = created;
   try {
     await grantAccess(api, draft, lookup, userId);
-    return { ...base, ok: true, userId, warnings };
+    return { ...base, action, ok: true, userId, warnings };
   } catch (error: unknown) {
     return {
       ...base,
+      action,
       ok: false,
       createdUserId: userId,
       warnings,

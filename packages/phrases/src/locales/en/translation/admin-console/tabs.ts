@@ -19,8 +19,9 @@ const tabs = {
   customize_jwt: 'Custom JWT',
   signing_keys: 'Signing keys',
   organization_template: 'Organization template',
-  iam_sync_users: 'IAM sync preview',
-  iam_staff_import: 'Import staff from MKN',
+  iam_sync_users: 'IAM sync',
+  iam_staff_import: 'Import users',
+  iam_systems: 'Integrated systems',
 };
 
 export default Object.freeze(tabs);

@@ -19,8 +19,9 @@ const tabs = {
   customize_jwt: 'JWT tùy chỉnh',
   signing_keys: 'Khóa ký',
   organization_template: 'Mẫu tổ chức',
-  iam_sync_users: 'Xem đồng bộ IAM',
-  iam_staff_import: 'Nhập cán bộ từ MKN',
+  iam_sync_users: 'Đồng bộ IAM',
+  iam_staff_import: 'Nhập người dùng',
+  iam_systems: 'Hệ tích hợp',
 };
 
 export default Object.freeze(tabs);

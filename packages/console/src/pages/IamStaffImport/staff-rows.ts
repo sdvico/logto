@@ -1,16 +1,26 @@
 /**
- * SDVICO: dòng cán bộ đọc từ tệp `export-staff-to-iam.js` của MKN, và phần "biết dòng nào sai" của bước
- * Soát. Hàm thuần, không gọi API: trạng thái hiện có của Logto đi vào qua `ImportLookup`.
+ * SDVICO: dòng người dùng đọc từ tệp xuất của một hệ tích hợp (MKN: `export-staff-to-iam.js`), và phần
+ * "biết dòng nào sai" của bước Soát. Hàm thuần, không gọi API: trạng thái hiện có của Logto đi vào qua
+ * `ImportLookup`.
  */
 import { emailRegEx, phoneRegEx, usernameRegEx } from '@logto/core-kit';
 import { z } from 'zod';
 
 import { parseCsv } from './csv';
-import { type BatchCount, isUnitMissing, type RoleCode, rules, toRoleCode } from './review-rules';
+import { countKeys } from './group';
+import {
+  type BatchCount,
+  isCreating,
+  isLinking,
+  isUnitMissing,
+  type RoleCode,
+  rules,
+  toRoleCode,
+} from './review-rules';
 
-/** Cột bắt buộc của tệp, đúng tên `COLUMNS` trong script xuất bên MKN. */
+/** Cột bắt buộc của tệp chung cho mọi hệ. */
 export const requiredColumns = Object.freeze([
-  'mkn_account_id',
+  'account_id',
   'username',
   'full_name',
   'email',
@@ -19,25 +29,36 @@ export const requiredColumns = Object.freeze([
   'password_bcrypt',
   'units',
   'role',
-  'mkn_groups',
-  'mkn_scopes',
+  'source_groups',
+  'source_scopes',
   'note',
 ] as const);
 
-/** Cột chỉ để đọc, thêm sau (10/10); tệp cũ không có thì để trống. */
-const optionalColumns = Object.freeze([
+/** Cột chỉ để đọc, giúp soát; tệp không có thì để trống. */
+export const optionalColumns = Object.freeze([
   'agency_name',
   'unit_names',
-  'mkn_scope_places',
+  'scope_places',
   'role_title',
 ] as const);
 
 type Column = (typeof requiredColumns)[number] | (typeof optionalColumns)[number];
 
+/** Tên cột cũ của tệp MKN (trước khi có tên chung) vẫn nhận. */
+const legacyColumnNames: Readonly<Record<string, Column>> = Object.freeze({
+  mkn_account_id: 'account_id',
+  mkn_groups: 'source_groups',
+  mkn_scopes: 'source_scopes',
+  mkn_scope_places: 'scope_places',
+});
+
+const columnOf = (name: string): string => legacyColumnNames[name] ?? name;
+
 type StaffRow = {
   /** Số dòng trong tệp (dòng tiêu đề là 1), dùng làm khoá ổn định. */
   line: number;
-  mknAccountId: string;
+  /** Mã tài khoản ở hệ nguồn, lưu vào `externalIds.<khoá hệ>`. */
+  sourceAccountId: string;
   username: string;
   fullName: string;
   email: string;
@@ -47,15 +68,15 @@ type StaffRow = {
   /** `LOẠI` hoặc `LOẠI:mã`, vd `CHI_CUC:22`, `DON_BP:TKSCR`, `CUC`. */
   units: string[];
   role: string;
-  mknGroups: string;
-  mknScopes: string;
+  sourceGroups: string;
+  sourceScopes: string;
   note: string;
-  /** Đơn vị ghi trong tài khoản MKN, vd "BQL cảng cá Tam Quan". */
+  /** Đơn vị ghi trong tài khoản ở hệ nguồn, vd "BQL cảng cá Tam Quan". */
   agencyName: string;
   /** Tên đơn vị IAM mà script đã suy ra, vd "Cảng cá Tam Quan · Gia Lai". */
   unitNames: string;
-  /** Vị trí các phạm vi đang có ở MKN, kèm mức. */
-  mknScopePlaces: string;
+  /** Vị trí các phạm vi đang có ở hệ nguồn, kèm mức. */
+  scopePlaces: string;
   /** Tên chức danh mặc định theo loại đơn vị, vd "Nhân viên". */
   roleTitle: string;
 };
@@ -81,13 +102,23 @@ export const parseStaffFile = (text: string): { rows: StaffRow[]; error?: string
     return { rows: [], error: 'Tệp rỗng.' };
   }
 
-  const indexOf = new Map(header.map((name, index) => [name.trim(), index]));
+  const columns = header.map((name) => columnOf(name.trim()));
+  const repeated = columns.filter((column, index) => columns.indexOf(column) !== index);
+
+  if (repeated.length > 0) {
+    return {
+      rows: [],
+      error: `Tệp có cột trùng (tính cả tên cũ mkn_*): ${[...new Set(repeated)].join(', ')}.`,
+    };
+  }
+
+  const indexOf = new Map(columns.map((column, index) => [column, index]));
   const missing = requiredColumns.filter((column) => !indexOf.has(column));
 
   if (missing.length > 0) {
     return {
       rows: [],
-      error: `Tệp thiếu cột: ${missing.join(', ')}. Hãy dùng tệp do export-staff-to-iam.js sinh ra.`,
+      error: `Tệp thiếu cột: ${missing.join(', ')}.`,
     };
   }
 
@@ -96,7 +127,7 @@ export const parseStaffFile = (text: string): { rows: StaffRow[]; error?: string
   return {
     rows: body.map((cells, index) => ({
       line: index + 2,
-      mknAccountId: cell(cells, 'mkn_account_id'),
+      sourceAccountId: cell(cells, 'account_id'),
       username: cell(cells, 'username'),
       fullName: cell(cells, 'full_name'),
       email: cell(cells, 'email'),
@@ -108,12 +139,12 @@ export const parseStaffFile = (text: string): { rows: StaffRow[]; error?: string
         .map((unit) => unit.trim())
         .filter(Boolean),
       role: cell(cells, 'role'),
-      mknGroups: cell(cells, 'mkn_groups'),
-      mknScopes: cell(cells, 'mkn_scopes'),
+      sourceGroups: cell(cells, 'source_groups'),
+      sourceScopes: cell(cells, 'source_scopes'),
       note: cell(cells, 'note'),
       agencyName: cell(cells, 'agency_name'),
       unitNames: cell(cells, 'unit_names'),
-      mknScopePlaces: cell(cells, 'mkn_scope_places'),
+      scopePlaces: cell(cells, 'scope_places'),
       roleTitle: cell(cells, 'role_title'),
     })),
   };
@@ -127,12 +158,29 @@ export type ImportOrganization = {
   roleTitles?: Readonly<Record<string, string>>;
 };
 
+/** Người dùng đã có trên IAM, đủ để soát việc nối. */
+export type ImportUser = {
+  id: string;
+  name: string;
+  username: string;
+  /** `custom_data.externalIds`: mã của người này ở từng hệ. */
+  externalIds: Readonly<Record<string, string>>;
+  /** Thuộc ít nhất một tổ chức, nên IAM Sync API trả về. */
+  isInSync: boolean;
+};
+
+/** Hệ nguồn đã chọn ở bước 1 (từ Hệ tích hợp). */
+export type ImportSource = { key: string; label: string };
+
 /** Trạng thái Logto mà bước Soát cần. Khoá chữ đã đưa về chữ thường. */
 export type ImportLookup = {
-  userIdByMknId: ReadonlyMap<string, string>;
-  usernames: ReadonlySet<string>;
-  emails: ReadonlySet<string>;
-  phones: ReadonlySet<string>;
+  source: ImportSource;
+  users: ReadonlyMap<string, ImportUser>;
+  /** Mã ở hệ nguồn → các người IAM đang mang mã đó (đúng ra tối đa một). */
+  userIdsBySourceId: ReadonlyMap<string, readonly string[]>;
+  userIdsByUsername: ReadonlyMap<string, readonly string[]>;
+  userIdsByEmail: ReadonlyMap<string, readonly string[]>;
+  userIdsByPhone: ReadonlyMap<string, readonly string[]>;
   organizationByUnit: ReadonlyMap<string, ImportOrganization>;
   /** Khoá đơn vị khớp nhiều tổ chức: không chọn bừa. */
   ambiguousUnits: ReadonlySet<string>;
@@ -175,10 +223,31 @@ export const normalizePhone = (phone: string) =>
 /** `error` chặn dòng; `warning` vẫn chạy được nhưng có mất mát; `info` để người duyệt biết. */
 export type Issue = { code: string; level: 'error' | 'warning' | 'info'; message: string };
 
+/** Lý do coi một người IAM là cùng người với dòng tệp. */
+export type MatchReason = 'username' | 'email' | 'phone';
+
+/** Người IAM khớp với dòng tệp, để nối thay vì tạo mới. */
+export type UserMatch = {
+  user: ImportUser;
+  reasons: MatchReason[];
+  /** Người IAM khác cũng khớp một khoá của dòng. */
+  otherUserIds: string[];
+  /**
+   * Không nối được vì không rõ là ai: email hoặc số điện thoại trùng nhiều người IAM, hoặc khớp nhiều
+   * người mà không ai khớp tên đăng nhập.
+   */
+  isAmbiguous: boolean;
+};
+
+/** `create` tạo người mới; `link` chỉ ghi mã hệ nguồn lên người IAM đã có. */
+type RowAction = 'create' | 'link';
+
 /** Dòng nháp ở bước Soát: dòng tệp + phần người duyệt sửa + kết quả tra Logto. */
 export type DraftRow = {
   source: StaffRow;
   include: boolean;
+  action: RowAction;
+  match?: UserMatch;
   username: string;
   role: RoleCode;
   /** Tổ chức Logto sẽ thêm người vào (đã tra từ `units`, người duyệt thêm hoặc bỏ được). */
@@ -186,17 +255,58 @@ export type DraftRow = {
   email?: string;
   phone?: string;
   issues: Issue[];
-  /** Đã có người Logto mang `externalIds.mkn` này: chạy thì chỉ bổ sung tổ chức, vai trò. */
+  /** Đã có người Logto mang `externalIds.<khoá hệ>` này: chạy thì chỉ bổ sung tổ chức, vai trò. */
   existingUserId?: string;
+};
+
+/** Người đi kèm một khoá tra; khoá trống thì không có ai. */
+const idsOf = (index: ReadonlyMap<string, readonly string[]>, key: string) =>
+  key ? (index.get(key) ?? []) : [];
+
+/**
+ * Người IAM khớp dòng tệp. Tên đăng nhập là khoá chính: khớp thì nối mặc định. Email, số điện thoại chỉ
+ * là gợi ý (dữ liệu thật có người dùng chung email); trùng nhiều người thì đánh dấu để chặn nối.
+ */
+const findMatch = (row: StaffRow, lookup: ImportLookup): UserMatch | undefined => {
+  const byReason: Array<[MatchReason, readonly string[]]> = [
+    ['username', idsOf(lookup.userIdsByUsername, row.username.toLowerCase())],
+    ['email', idsOf(lookup.userIdsByEmail, row.email.toLowerCase())],
+    ['phone', idsOf(lookup.userIdsByPhone, normalizePhone(row.phone))],
+  ];
+  const [candidateId] = byReason.flatMap(([, ids]) => ids);
+  const user = candidateId === undefined ? undefined : lookup.users.get(candidateId);
+
+  if (!user) {
+    return undefined;
+  }
+
+  const reasons = byReason.filter(([, ids]) => ids.includes(user.id)).map(([reason]) => reason);
+  const otherUserIds = [
+    ...new Set(byReason.flatMap(([, ids]) => ids).filter((id) => id !== user.id)),
+  ];
+
+  return {
+    user,
+    reasons,
+    otherUserIds,
+    isAmbiguous:
+      // Trùng nhiều người kể cả tên đăng nhập (Logto có thể phân biệt hoa thường): không nối tự động.
+      byReason.some(([, ids]) => ids.length > 1) ||
+      (!reasons.includes('username') && otherUserIds.length > 0),
+  };
 };
 
 /** Dòng nháp ban đầu từ một dòng tệp. Lỗi tính riêng ở `checkRows` vì có lỗi phụ thuộc cả lô. */
 export const draftFromRow = (row: StaffRow, lookup: ImportLookup): DraftRow => {
-  const existingUserId = lookup.userIdByMknId.get(row.mknAccountId);
+  const [existingUserId] = idsOf(lookup.userIdsBySourceId, row.sourceAccountId);
+  const match = existingUserId ? undefined : findMatch(row, lookup);
 
   return {
     source: row,
     include: !existingUserId,
+    // Chỉ tự nối khi khớp tên đăng nhập; khớp email, số điện thoại thì người duyệt tự chọn nối.
+    action: match?.reasons.includes('username') ? 'link' : 'create',
+    ...(match ? { match } : {}),
     username: usernameRegEx.test(row.username) ? row.username : suggestUsername(row.username),
     role: toRoleCode(row.role) ?? 'CHUYEN_VIEN',
     organizations: row.units.flatMap((unit) => {
@@ -211,7 +321,9 @@ export const draftFromRow = (row: StaffRow, lookup: ImportLookup): DraftRow => {
 /** Email dùng được: đúng định dạng, chưa ai trên IAM dùng, không trùng dòng khác đang chọn. */
 const usableEmail = (email: string, lookup: ImportLookup, batchCount: BatchCount) => {
   const key = email.toLowerCase();
-  return emailRegEx.test(email) && !lookup.emails.has(key) && (batchCount.emails.get(key) ?? 0) <= 1
+  return emailRegEx.test(email) &&
+    !lookup.userIdsByEmail.has(key) &&
+    (batchCount.emails.get(key) ?? 0) <= 1
     ? email
     : undefined;
 };
@@ -219,28 +331,33 @@ const usableEmail = (email: string, lookup: ImportLookup, batchCount: BatchCount
 const usablePhone = (raw: string, lookup: ImportLookup, batchCount: BatchCount) => {
   const phone = normalizePhone(raw);
   return phoneRegEx.test(phone) &&
-    !lookup.phones.has(phone) &&
+    !lookup.userIdsByPhone.has(phone) &&
     (batchCount.phones.get(phone) ?? 0) <= 1
     ? phone
     : undefined;
 };
 
-const countBy = (keys: readonly string[]) =>
-  keys
-    .filter(Boolean)
-    .reduce(
-      (count, key) => new Map(count).set(key, (count.get(key) ?? 0) + 1),
-      new Map<string, number>()
-    );
+const issueKey = (issues: readonly Issue[]) =>
+  issues.map(({ code, message }) => `${code}:${message}`).join('|');
+
+const isSameCheck = (before: DraftRow, after: DraftRow) =>
+  before.username === after.username &&
+  before.email === after.email &&
+  before.phone === after.phone &&
+  issueKey(before.issues) === issueKey(after.issues);
 
 /** Tính lại lỗi cho cả lô (trùng chỉ tính giữa các dòng đang chọn); trả mảng dòng mới. */
 export const checkRows = (drafts: readonly DraftRow[], lookup: ImportLookup): DraftRow[] => {
   const selected = drafts.filter(({ include }) => include);
+  const creating = selected.filter((draft) => isCreating(draft));
   const batchCount: BatchCount = {
-    usernames: countBy(selected.map(({ username }) => username.trim().toLowerCase())),
-    mknIds: countBy(selected.map(({ source }) => source.mknAccountId)),
-    emails: countBy(selected.map(({ source }) => source.email.toLowerCase())),
-    phones: countBy(selected.map(({ source }) => normalizePhone(source.phone))),
+    usernames: countKeys(creating.map(({ username }) => username.trim().toLowerCase())),
+    sourceIds: countKeys(selected.map(({ source }) => source.sourceAccountId)),
+    emails: countKeys(creating.map(({ source }) => source.email.toLowerCase())),
+    phones: countKeys(creating.map(({ source }) => normalizePhone(source.phone))),
+    linkTargets: countKeys(
+      selected.flatMap((draft) => (isLinking(draft) && draft.match ? [draft.match.user.id] : []))
+    ),
   };
 
   return drafts.map((current) => {
@@ -248,13 +365,15 @@ export const checkRows = (drafts: readonly DraftRow[], lookup: ImportLookup): Dr
     const email = usableEmail(draft.source.email, lookup, batchCount);
     const phone = usablePhone(draft.source.phone, lookup, batchCount);
     const context = { draft, lookup, batchCount, email, phone };
-
-    return {
+    const checked = {
       ...draft,
       email,
       phone,
       issues: rules.flatMap((rule) => rule(context) ?? []),
     };
+
+    // Giữ nguyên đối tượng cũ khi không đổi gì, để thẻ dòng (memo) không vẽ lại cả danh sách.
+    return isSameCheck(current, checked) ? current : checked;
   });
 };
 

@@ -1,95 +1,267 @@
-import { type Nullable } from '@silverhand/essentials';
-import useSWR from 'swr';
+import { type Organization } from '@logto/schemas';
+import classNames from 'classnames';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import PageMeta from '@/components/PageMeta';
-import { type RequestError } from '@/hooks/use-api';
+import Button from '@/ds-components/Button';
+import Card from '@/ds-components/Card';
+import CardTitle from '@/ds-components/CardTitle';
+import DangerousRaw from '@/ds-components/DangerousRaw';
+import InlineNotification from '@/ds-components/InlineNotification';
+import Table from '@/ds-components/Table';
+import Tag from '@/ds-components/Tag';
+import useApi from '@/hooks/use-api';
+import useTenantPathname from '@/hooks/use-tenant-pathname';
 import pageLayout from '@/scss/page-layout.module.scss';
 
-import styles from './index.module.scss';
+import { fetchAll } from '../IamStaffImport/lookup';
+import { loadSystems } from '../IamSystems/system-api';
+import { unitTypeLabel } from '../IamSystems/systems';
 
-type SyncUser = {
-  id: string;
-  username: Nullable<string>;
-  name: Nullable<string>;
-  status: 'active' | 'suspended';
-  organizations: Array<{ id: string; name: string }>;
-  roles: Array<{ code: string; name: string; organizationId?: string }>;
-  scopes: Array<{ type: string; id: string }>;
-  updated_at: string;
+import SyncFilters from './SyncFilters';
+import styles from './index.module.scss';
+import {
+  emptyFilter,
+  filterUsers,
+  summarize,
+  type SyncFilter,
+  type SyncSystem,
+  type SyncUser,
+  systemsOf,
+  type TreeOrganization,
+  unitsOf,
+} from './sync-users';
+
+type Loaded = {
+  users: SyncUser[];
+  registered: SyncSystem[];
+  tree: ReadonlyMap<string, TreeOrganization>;
+};
+
+const treeOrganizationOf = ({ id, name, customData }: Organization): TreeOrganization => {
+  const { type, parentOrgId } = customData;
+  return {
+    id,
+    name,
+    ...(typeof type === 'string' ? { type } : {}),
+    ...(typeof parentOrgId === 'string' ? { parentOrgId } : {}),
+  };
 };
 
 /**
- * Sdvico: man hinh xem nhanh du lieu ma IAM Sync API (`/api/iam-sync-preview/users`) tra ve cho
- * cac he thong ngoai (Sat Alert/eLogbook/IUU) — chi doc, dung session admin thuong, khong qua M2M
- * token. Xem docs/iam-sync-api-design.md.
+ * Sdvico: đúng dữ liệu IAM Sync API (`/api/iam-sync-preview/users`) trả cho các hệ tích hợp — mỗi người
+ * ở đơn vị nào, chức danh gì, mã ở từng hệ. Chỉ xem, dùng session admin, không qua M2M token.
  */
 function IamSyncUsers() {
-  const { data, error } = useSWR<{ data: SyncUser[] }, RequestError>('api/iam-sync-preview/users');
-  const isLoading = !data && !error;
+  const api = useApi({ hideErrorToast: true });
+  const { navigate } = useTenantPathname();
+  const [loaded, setLoaded] = useState<Loaded>();
+  const [error, setError] = useState<string>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [filter, setFilter] = useState<SyncFilter>(emptyFilter);
+
+  const reload = useCallback(async () => {
+    setIsLoading(true);
+    setError(undefined);
+    try {
+      const [preview, { systems }, organizations] = await Promise.all([
+        api.get('api/iam-sync-preview/users').json<{ data: SyncUser[] }>(),
+        loadSystems(api),
+        fetchAll<Organization>(api, 'api/organizations'),
+      ]);
+      setLoaded({
+        users: preview.data,
+        registered: systems.map(({ system: { key, label } }) => ({ key, label })),
+        tree: new Map(
+          organizations.map((organization) => [organization.id, treeOrganizationOf(organization)])
+        ),
+      });
+    } catch (loadError: unknown) {
+      setError(`Không tải được dữ liệu: ${String(loadError)}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [api]);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
+
+  const systems = useMemo(
+    () => (loaded ? systemsOf(loaded.registered, loaded.users) : []),
+    [loaded]
+  );
+  const summary = loaded && summarize(loaded.users, systems);
+  const visible = useMemo(
+    () => (loaded ? filterUsers(loaded.users, filter) : []),
+    [loaded, filter]
+  );
+  const labelOf = (key: string) => systems.find((system) => system.key === key)?.label ?? key;
 
   return (
     <div className={pageLayout.container}>
       <PageMeta titleKey="tabs.iam_sync_users" />
-      <div className={styles.container}>
-        <p className={styles.subtitle}>
-          Dữ liệu mà IAM Sync API trả về cho các hệ thống ngoài (Sat Alert / eLogbook / IUU) — chỉ
-          xem, không chỉnh sửa được ở đây.
-        </p>
-
-        {isLoading && <div>Đang tải...</div>}
-        {error && <div className={styles.error}>Không tải được dữ liệu.</div>}
-
-        {data && (
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Tên đăng nhập</th>
-                <th>Họ tên</th>
-                <th>Trạng thái</th>
-                <th>Tổ chức</th>
-                <th>Vai trò</th>
-                <th>Phạm vi dữ liệu</th>
-                <th>Cập nhật lúc</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.data.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.username ?? '-'}</td>
-                  <td>{user.name ?? '-'}</td>
-                  <td>{user.status}</td>
-                  <td>
-                    {user.organizations.map((org) => (
-                      <span key={org.id} className={styles.pill}>
-                        {org.name}
-                      </span>
-                    ))}
-                  </td>
-                  <td>
-                    {user.roles.map((role) => (
-                      <span
-                        key={`${role.organizationId ?? ''}-${role.code}`}
-                        className={styles.pill}
-                      >
-                        {role.name}
-                        {role.organizationId && ` · ${role.organizationId}`}
-                      </span>
-                    ))}
-                  </td>
-                  <td>
-                    {user.scopes.map((scope) => (
-                      <span key={`${scope.type}-${scope.id}`} className={styles.pill}>
-                        {scope.type}: {scope.id}
-                      </span>
-                    ))}
-                  </td>
-                  <td>{new Date(user.updated_at).toLocaleString('vi-VN')}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      <div className={pageLayout.headline}>
+        <CardTitle
+          title={<DangerousRaw>Đồng bộ IAM</DangerousRaw>}
+          subtitle={
+            <DangerousRaw>
+              Đúng dữ liệu IAM Sync API trả cho các hệ tích hợp: mỗi người ở đơn vị nào, chức danh
+              gì, và mã của họ ở từng hệ. Chỉ xem; người chưa thuộc tổ chức nào không có ở đây.
+            </DangerousRaw>
+          }
+        />
+        <div className={styles.actions}>
+          <Button
+            size="large"
+            title={<DangerousRaw>Làm mới</DangerousRaw>}
+            isLoading={isLoading}
+            onClick={() => {
+              void reload();
+            }}
+          />
+          <Button
+            type="primary"
+            size="large"
+            title={<DangerousRaw>Nhập người dùng</DangerousRaw>}
+            onClick={() => {
+              navigate('/iam-staff-import');
+            }}
+          />
+        </div>
       </div>
+
+      {error && (
+        <InlineNotification severity="error" className={styles.notice}>
+          {error}
+        </InlineNotification>
+      )}
+
+      {summary && (
+        <div className={styles.summary}>
+          <Card className={styles.stat}>
+            Người dùng
+            <strong>{summary.total}</strong>
+          </Card>
+          <Card className={styles.stat}>
+            Đã nối với hệ (có mã trong external_ids)
+            <div className={styles.linked}>
+              {summary.linked.length === 0 && <span>Chưa có hệ</span>}
+              {summary.linked.map(({ key, label, count }) => (
+                <Tag key={key} variant="cell">
+                  {label} {count}
+                </Tag>
+              ))}
+            </div>
+          </Card>
+          <Card className={styles.stat}>
+            Đang khoá
+            <strong>{summary.suspended}</strong>
+          </Card>
+          <Card className={classNames(styles.stat, summary.untypedUnits > 0 && styles.warning)}>
+            Đơn vị thiếu loại (type)
+            <strong>{summary.untypedUnits}</strong>
+          </Card>
+        </div>
+      )}
+
+      <Table
+        className={styles.table}
+        rowIndexKey="id"
+        isLoading={!loaded && !error}
+        rowGroups={[{ key: 'users', data: visible }]}
+        filter={
+          loaded && (
+            <SyncFilters
+              filter={filter}
+              systems={systems}
+              users={loaded.users}
+              onChange={setFilter}
+            />
+          )
+        }
+        placeholder={<div className={styles.muted}>Không có người nào khớp bộ lọc.</div>}
+        columns={[
+          {
+            title: 'Người dùng',
+            dataIndex: 'name',
+            colSpan: 4,
+            render: ({ name, username }) => (
+              <>
+                <div className={styles.name}>{name ?? '—'}</div>
+                <div className={styles.muted}>{username ?? '—'}</div>
+              </>
+            ),
+          },
+          {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            colSpan: 3,
+            render: ({ status }) => (
+              <Tag type="state" status={status === 'active' ? 'success' : 'error'} variant="plain">
+                <DangerousRaw>{status === 'active' ? 'Hoạt động' : 'Đang khoá'}</DangerousRaw>
+              </Tag>
+            ),
+          },
+          {
+            title: 'Đơn vị và chức danh',
+            dataIndex: 'organizations',
+            colSpan: 8,
+            render: (user) =>
+              loaded &&
+              unitsOf(user, loaded.tree).map((unit) => (
+                <div key={unit.id} className={styles.unit}>
+                  <div className={styles.unitHead}>
+                    {unit.name}
+                    <span className={unit.type ? styles.typeTag : styles.missingTag}>
+                      {unit.type ? unitTypeLabel(unit.type) : 'Thiếu loại'}
+                    </span>
+                  </div>
+                  <div className={styles.muted}>
+                    {[unit.title, unit.place].filter(Boolean).join(' · ')}
+                  </div>
+                </div>
+              )),
+          },
+          {
+            title: 'Mã ở các hệ',
+            dataIndex: 'external_ids',
+            colSpan: 5,
+            render: ({ external_ids }) => {
+              const ids = Object.entries(external_ids ?? {});
+              return ids.length === 0 ? (
+                <span className={styles.muted}>Chưa nối hệ nào</span>
+              ) : (
+                <div className={styles.ids}>
+                  {ids.map(([key, id]) => (
+                    <Tag key={key} variant="cell">
+                      {labelOf(key)}{' '}
+                      <span className={styles.code} title={id}>
+                        {id.length > 12 ? `${id.slice(0, 8)}…` : id}
+                      </span>
+                    </Tag>
+                  ))}
+                </div>
+              );
+            },
+          },
+          {
+            title: 'Phạm vi riêng',
+            dataIndex: 'scopes',
+            colSpan: 3,
+            render: ({ scopes }) =>
+              scopes.length === 0 ? '—' : scopes.map(({ type, id }) => `${type}: ${id}`).join(', '),
+          },
+          {
+            title: 'Cập nhật',
+            dataIndex: 'updated_at',
+            colSpan: 3,
+            render: ({ updated_at }) => (
+              <span className={styles.muted}>{new Date(updated_at).toLocaleString('vi-VN')}</span>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -27,6 +27,7 @@ const Dashboard = safeLazy(async () => import('@/pages/Dashboard'));
 const GetStarted = safeLazy(async () => import('@/pages/GetStarted'));
 const IamSyncUsers = safeLazy(async () => import('@/pages/IamSyncUsers'));
 const IamStaffImport = safeLazy(async () => import('@/pages/IamStaffImport'));
+const IamSystems = safeLazy(async () => import('@/pages/IamSystems'));
 
 export const useConsoleRoutes = () => {
   const tenantSettings = useTenantSettings();
@@ -55,6 +56,15 @@ export const useConsoleRoutes = () => {
         organizations,
         { path: 'iam-sync-users', element: <IamSyncUsers /> },
         { path: 'iam-staff-import', element: <IamStaffImport /> },
+        {
+          path: 'iam-systems',
+          children: [
+            { index: true, element: <IamSystems /> },
+            // Danh sách và chi tiết cùng một trang (bố cục hai cột); thêm hệ mở hộp thoại trên đó.
+            { path: 'create', element: <IamSystems /> },
+            { path: ':syncAppId', element: <IamSystems /> },
+          ],
+        },
         {
           path: 'signing-keys',
           // Deprecated page, redirect to oidc-configs in the tenant settings page.

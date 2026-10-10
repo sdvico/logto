@@ -1,119 +1,379 @@
-.container {
-  padding: var(--pad-lg, 24px);
+@use '@/scss/underscore' as _;
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(4);
+  margin-top: _.unit(4);
 }
 
-.subtitle {
-  color: var(--text-secondary, #6e787e);
-  margin-bottom: 16px;
-  font-size: 13px;
-}
-
+/* Các bước */
 .steps {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: _.unit(2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: _.unit(2);
+  padding: _.unit(1.5) _.unit(3);
+  border-radius: 100px;
+  font: var(--font-label-2);
+  color: var(--color-text-secondary);
+  background: var(--color-layer-1);
+
+  &.current {
+    color: var(--color-text-link);
+    background: var(--color-focused-variant);
+  }
+
+  &.done {
+    color: var(--color-text);
+  }
+}
+
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font: var(--font-label-3);
+  background: var(--color-layer-2);
+  color: inherit;
+
+  .current & {
+    background: var(--color-primary);
+    color: var(--color-static-white);
+  }
+}
+
+/* Bước 1 */
+.cardTitle {
+  font: var(--font-title-2);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.cardSubtitle {
+  font: var(--font-body-2);
+  color: var(--color-text-secondary);
+  margin: _.unit(1) 0 _.unit(4);
+}
+
+.sources {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: _.unit(3);
+}
+
+.sourceText {
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(1);
+  padding-right: _.unit(4);
+}
+
+.sourceLabel {
+  font: var(--font-label-1);
+  color: var(--color-text);
+}
+
+.sourceKey {
+  font: var(--font-body-3);
+  color: var(--color-text-secondary);
+}
+
+.dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: _.unit(2);
+  padding: _.unit(10) _.unit(6);
+  border: 2px dashed var(--color-border);
+  border-radius: _.unit(4);
+  background: var(--color-layer-1);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+
+  &:hover,
+  &.dragging {
+    border-color: var(--color-primary);
+    background: var(--color-hover);
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 50%;
+  }
+
+  &:focus-within {
+    border-color: var(--color-primary);
+    outline: 2px solid var(--color-focused-variant);
+  }
+
+  /* Ẩn bằng mắt nhưng vẫn nhận phím Tab, để người dùng bàn phím mở được hộp chọn tệp. */
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0%;
+    overflow: hidden;
+  }
+
+  svg {
+    width: 32px;
+    height: 32px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.dropTitle {
+  font: var(--font-title-3);
+  color: var(--color-text);
+}
+
+.dropHint {
+  font: var(--font-body-2);
+  color: var(--color-text-secondary);
+
+  span {
+    color: var(--color-text-link);
+  }
+}
+
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: _.unit(1.5);
+  margin: _.unit(2) 0 _.unit(3);
+}
+
+.column {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  padding: _.unit(0.5) _.unit(2);
+  border-radius: _.unit(1);
+  background: var(--color-layer-2);
+  color: var(--color-text);
+}
+
+.label {
+  font: var(--font-label-2);
+  color: var(--color-text);
+}
+
+.note {
+  font: var(--font-body-2);
+  color: var(--color-text-secondary);
+}
+
+.code {
+  font-family: 'Roboto Mono', monospace;
   font-size: 13px;
-  color: var(--text-secondary, #6e787e);
+  padding: 0 _.unit(1);
+  border-radius: _.unit(1);
+  background: var(--color-layer-2);
+  color: var(--color-text);
 }
 
-.activeStep {
-  color: var(--text-accent, #3a3ae0);
-  font-weight: 600;
-}
-
+/* Bước 2 */
 .toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  font-size: 13px;
+  gap: _.unit(3);
 }
 
-.summary {
+.tabs {
   flex: 1;
+  min-width: 0;
 }
 
-.tableWrapper {
-  overflow-x: auto;
-}
+.counters {
+  display: flex;
+  gap: _.unit(3);
+  font: var(--font-body-2);
+  color: var(--color-text-secondary);
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-
-  th,
-  td {
-    text-align: left;
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border, #e5e8eb);
-    vertical-align: top;
-  }
-
-  th {
-    font-weight: 500;
-    color: var(--text-secondary, #6e787e);
+  b {
+    color: var(--color-text);
   }
 }
 
-.excluded td {
-  opacity: 50%;
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(3);
 }
 
-.usernameInput {
-  width: 160px;
-  padding: 4px 6px;
-  font-size: 13px;
+.row {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) minmax(200px, 1fr) minmax(320px, 1.6fr);
+  gap: _.unit(5);
+  padding: _.unit(5);
+
+  @media screen and (max-width: 1080px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  &.excluded {
+    opacity: 55%;
+  }
 }
 
-.muted {
-  color: var(--text-secondary, #6e787e);
-  font-size: 11px;
+.who {
+  display: flex;
+  gap: _.unit(3);
+  align-items: flex-start;
 }
 
-.pill {
-  display: inline-block;
-  padding: 1px 8px;
-  border-radius: 10px;
-  background: var(--bg-accent, #eef1ff);
-  color: var(--text-accent, #3a3ae0);
-  font-size: 11px;
-  margin: 0 4px 2px 0;
+.name {
+  font: var(--font-label-1);
+  color: var(--color-text);
 }
 
-.pillRemove {
-  margin-left: 4px;
-  border: none;
-  background: none;
-  color: inherit;
-  cursor: pointer;
-  padding: 0;
+.meta {
+  font: var(--font-body-3);
+  color: var(--color-text-secondary);
+  word-break: break-word;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(1);
+  min-width: 0;
+}
+
+.sectionLabel {
+  font: var(--font-label-3);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.matchBox {
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(1);
+  padding: _.unit(3);
+  border-radius: _.unit(2);
+  background: var(--color-layer-2);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: _.unit(1.5);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: _.unit(1);
+  padding: _.unit(1) _.unit(1) _.unit(1) _.unit(2.5);
+  border-radius: 100px;
+  font: var(--font-body-3);
+  color: var(--color-text);
+  background: var(--color-focused-variant);
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-hover);
+      color: var(--color-text);
+    }
+  }
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: _.unit(3);
 }
 
 .issues {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(1.5);
+  padding-top: _.unit(3);
+  border-top: 1px solid var(--color-divider);
   margin: 0;
-  padding-left: 16px;
-  font-size: 12px;
+  list-style: none;
 }
 
-.error {
-  color: var(--text-danger, #c0392b);
+.issue {
+  display: flex;
+  align-items: flex-start;
+  gap: _.unit(2);
+  font: var(--font-body-2);
+  color: var(--color-text);
 }
 
-.warning {
-  color: var(--text-warning, #b26a00);
+/* Bước 3 và 4 */
+.running {
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(3);
+  font: var(--font-body-2);
+  color: var(--color-text);
 }
 
-.info {
-  color: var(--text-secondary, #6e787e);
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: _.unit(3);
 }
 
-.ok {
-  color: var(--text-success, #2e7d32);
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(1);
+  font: var(--font-body-2);
+  color: var(--color-text-secondary);
+
+  strong {
+    font: var(--font-title-1);
+    color: var(--color-text);
+  }
+
+  &.error strong {
+    color: var(--color-error);
+  }
 }
 
-.picker {
-  min-width: 220px;
-  margin-top: 4px;
+.nextSteps {
+  margin: 0;
+  padding-left: _.unit(5);
+  font: var(--font-body-2);
+  color: var(--color-text);
+
+  li + li {
+    margin-top: _.unit(1);
+  }
+}
+
+.table {
+  margin-top: 0;
 }

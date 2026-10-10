@@ -1,65 +1,25 @@
 import { toCsv } from './csv';
 import {
   checkRows,
-  draftFromRow,
   hasBlockingIssue,
-  type ImportLookup,
   normalizePhone,
   parseStaffFile,
   roleTitleOf,
-  requiredColumns,
   suggestUsername,
   unitKeyOf,
 } from './staff-rows';
-
-const header = [...requiredColumns];
-
-const fileOf = (...rows: Array<Partial<Record<(typeof requiredColumns)[number], string>>>) =>
-  toCsv([
-    header,
-    // Tệp xuất thật luôn ghi role (mặc định CHUYEN_VIEN).
-    ...rows.map((row) =>
-      header.map((column) => row[column] ?? (column === 'role' ? 'CHUYEN_VIEN' : ''))
-    ),
-  ]);
-
-const lookup: ImportLookup = {
-  userIdByMknId: new Map([['mkn-imported', 'user-imported']]),
-  usernames: new Set(['taken', 'imported']),
-  emails: new Set(['used@example.com']),
-  phones: new Set(['0900000000']),
-  organizationByUnit: new Map([
-    ['CHI_CUC:22', { id: 'ccts-qn', name: 'Chi cục Thủy sản Quảng Ninh' }],
-    ['DON_BP:TKSCR', { id: 'bp-qn-cr', name: 'Trạm KSBP Cái Rồng' }],
-    ['KN_VUNG', { id: 'cckn-v1', name: 'Vùng 1' }],
-  ]),
-  ambiguousUnits: new Set(['KN_VUNG']),
-  roleIdByCode: new Map([
-    ['TRUONG', 'role-truong'],
-    ['PHO', 'role-pho'],
-    ['CHUYEN_VIEN', 'role-cv'],
-  ]),
-};
-
-const reviewOf = (...rows: Parameters<typeof fileOf>) =>
-  checkRows(
-    parseStaffFile(fileOf(...rows)).rows.map((row) => draftFromRow(row, lookup)),
-    lookup
-  );
-
-const codesOf = (draft: ReturnType<typeof reviewOf>[number]) =>
-  draft.issues.map(({ code }) => code);
+import { codesOf, fileOf, header, lookup, reviewOf } from './test-fixtures';
 
 describe('parseStaffFile', () => {
   it('reads every column and splits units', () => {
     const { rows, error } = parseStaffFile(
-      fileOf({ mkn_account_id: 'a1', username: 'nguyen_a', units: 'CHI_CUC:22; DON_BP:TKSCR' })
+      fileOf({ account_id: 'a1', username: 'nguyen_a', units: 'CHI_CUC:22; DON_BP:TKSCR' })
     );
 
     expect(error).toBeUndefined();
     expect(rows[0]).toMatchObject({
       line: 2,
-      mknAccountId: 'a1',
+      sourceAccountId: 'a1',
       username: 'nguyen_a',
       units: ['CHI_CUC:22', 'DON_BP:TKSCR'],
     });
@@ -67,7 +27,7 @@ describe('parseStaffFile', () => {
 
   it('reads the optional location columns, and leaves them empty for an older file', () => {
     const newFile = toCsv([
-      [...header, 'agency_name', 'unit_names', 'mkn_scope_places', 'role_title'],
+      [...header, 'agency_name', 'unit_names', 'scope_places', 'role_title'],
       [
         ...header.map((column) => (column === 'username' ? 'cang' : '')),
         'BQL cảng cá Tam Quan',
@@ -80,19 +40,58 @@ describe('parseStaffFile', () => {
     expect(parseStaffFile(newFile).rows[0]).toMatchObject({
       agencyName: 'BQL cảng cá Tam Quan',
       unitNames: 'Cảng cá Tam Quan · Gia Lai',
-      mknScopePlaces: 'Tam Quan · Gia Lai (HANDLE)',
+      scopePlaces: 'Tam Quan · Gia Lai (HANDLE)',
       roleTitle: 'Nhân viên',
     });
     expect(parseStaffFile(fileOf({ username: 'old' })).rows[0]).toMatchObject({
       agencyName: '',
       unitNames: '',
-      mknScopePlaces: '',
+      scopePlaces: '',
       roleTitle: '',
     });
   });
 
   it('rejects a file without the export columns', () => {
-    expect(parseStaffFile('username,name\na,b').error).toContain('mkn_account_id');
+    expect(parseStaffFile('username,name\na,b').error).toContain('account_id');
+  });
+
+  it('still reads an MKN file with the old mkn_* column names', () => {
+    const legacyHeader = header.map(
+      (column) =>
+        ({
+          account_id: 'mkn_account_id',
+          source_groups: 'mkn_groups',
+          source_scopes: 'mkn_scopes',
+        })[column as string] ?? column
+    );
+    const legacyFile = toCsv([
+      [...legacyHeader, 'mkn_scope_places'],
+      [
+        ...legacyHeader.map(
+          (column) =>
+            ({
+              mkn_account_id: 'a1',
+              username: 'cang',
+              mkn_groups: 'bql_cang',
+              mkn_scopes: 'PORT:1',
+            })[column] ?? ''
+        ),
+        'Tam Quan (HANDLE)',
+      ],
+    ]);
+    const { rows, error } = parseStaffFile(legacyFile);
+
+    expect(error).toBeUndefined();
+    expect(rows[0]).toMatchObject({
+      sourceAccountId: 'a1',
+      sourceGroups: 'bql_cang',
+      sourceScopes: 'PORT:1',
+      scopePlaces: 'Tam Quan (HANDLE)',
+    });
+  });
+
+  it('rejects a file that has both the old and the new name of a column', () => {
+    expect(parseStaffFile(toCsv([[...header, 'mkn_account_id']])).error).toContain('account_id');
   });
 });
 
@@ -121,7 +120,7 @@ describe('suggestUsername and normalizePhone', () => {
 
 describe('roleTitleOf', () => {
   const [draft] = reviewOf({
-    mkn_account_id: 'a1',
+    account_id: 'a1',
     username: 'a',
     units: 'CHI_CUC:22',
     password_bcrypt: 'x',
@@ -153,7 +152,7 @@ describe('roleTitleOf', () => {
 describe('checkRows', () => {
   it('accepts a clean row and resolves its organizations', () => {
     const [draft] = reviewOf({
-      mkn_account_id: 'a1',
+      account_id: 'a1',
       username: 'nguyen_a',
       units: 'CHI_CUC:22;DON_BP:TKSCR',
       role: 'CHUYEN_VIEN',
@@ -171,7 +170,7 @@ describe('checkRows', () => {
 
   it('renames an invalid username with a warning', () => {
     const [draft] = reviewOf({
-      mkn_account_id: 'a1',
+      account_id: 'a1',
       username: 'nguyen.van-a',
       units: 'CHI_CUC:22',
       password_bcrypt: 'x',
@@ -184,7 +183,7 @@ describe('checkRows', () => {
 
   it('keeps a username with hyphens as in MKN', () => {
     const [draft] = reviewOf({
-      mkn_account_id: 'a1',
+      account_id: 'a1',
       username: 'chinnd-THO',
       units: 'CHI_CUC:22',
       password_bcrypt: 'x',
@@ -194,21 +193,22 @@ describe('checkRows', () => {
     expect(draft?.issues).toEqual([]);
   });
 
-  it('blocks a username taken on IAM or duplicated in the file', () => {
+  it('blocks a username taken on IAM when creating, or duplicated in the file', () => {
     const [taken, first, second] = reviewOf(
-      { mkn_account_id: 'a1', username: 'TAKEN', units: 'CHI_CUC:22', password_bcrypt: 'x' },
-      { mkn_account_id: 'a2', username: 'dup', units: 'CHI_CUC:22', password_bcrypt: 'x' },
-      { mkn_account_id: 'a3', username: 'dup', units: 'CHI_CUC:22', password_bcrypt: 'x' }
+      { account_id: 'a1', username: 'TAKEN', units: 'CHI_CUC:22', password_bcrypt: 'x' },
+      { account_id: 'a2', username: 'dup', units: 'CHI_CUC:22', password_bcrypt: 'x' },
+      { account_id: 'a3', username: 'dup', units: 'CHI_CUC:22', password_bcrypt: 'x' }
     );
+    const [createTaken] = checkRows([{ ...taken!, action: 'create' }], lookup);
 
-    expect(codesOf(taken!)).toContain('USERNAME_TAKEN');
+    expect(codesOf(createTaken!)).toContain('USERNAME_TAKEN');
     expect(codesOf(first!)).toContain('USERNAME_DUPLICATE_IN_FILE');
     expect(hasBlockingIssue(second!)).toBe(true);
   });
 
   it('drops a used email and an invalid phone with warnings', () => {
     const [draft] = reviewOf({
-      mkn_account_id: 'a1',
+      account_id: 'a1',
       username: 'nguyen_a',
       units: 'CHI_CUC:22',
       password_bcrypt: 'x',
@@ -216,14 +216,15 @@ describe('checkRows', () => {
       phone: '0900000000',
     });
 
-    expect(codesOf(draft!)).toEqual(['EMAIL_DROPPED', 'PHONE_DROPPED']);
+    expect(draft?.action).toBe('create');
+    expect(codesOf(draft!)).toEqual(['LINK_SUGGESTED', 'EMAIL_DROPPED', 'PHONE_DROPPED']);
     expect(draft?.email).toBeUndefined();
     expect(draft?.phone).toBeUndefined();
   });
 
   it('flags unknown and ambiguous units, and a row without any unit', () => {
     const [draft] = reviewOf({
-      mkn_account_id: 'a1',
+      account_id: 'a1',
       username: 'nguyen_a',
       units: 'KN_VUNG;CANG:NOPE',
       password_bcrypt: 'x',
@@ -236,7 +237,7 @@ describe('checkRows', () => {
 
   it('unchecks an already imported row and does not report its own username as taken', () => {
     const [draft] = reviewOf({
-      mkn_account_id: 'mkn-imported',
+      account_id: 'mkn-imported',
       username: 'imported',
       units: 'CHI_CUC:22',
     });
@@ -248,7 +249,7 @@ describe('checkRows', () => {
 
   it('reports missing password and suspended status', () => {
     const [draft] = reviewOf({
-      mkn_account_id: 'a1',
+      account_id: 'a1',
       username: 'nguyen_a',
       units: 'CHI_CUC:22',
       status: 'SUSPENDED',
@@ -262,13 +263,13 @@ describe('checkRows', () => {
   it('warns when an unknown role falls back to CHUYEN_VIEN', () => {
     const [unknown, empty] = reviewOf(
       {
-        mkn_account_id: 'a1',
+        account_id: 'a1',
         username: 'a',
         units: 'CHI_CUC:22',
         password_bcrypt: 'x',
         role: 'GIAM_DOC',
       },
-      { mkn_account_id: 'a2', username: 'b', units: 'CHI_CUC:22', password_bcrypt: 'x', role: '' }
+      { account_id: 'a2', username: 'b', units: 'CHI_CUC:22', password_bcrypt: 'x', role: '' }
     );
 
     expect(unknown?.role).toBe('CHUYEN_VIEN');
@@ -279,14 +280,14 @@ describe('checkRows', () => {
   it('blocks two selected rows with the same mkn_account_id', () => {
     const [first, second] = reviewOf(
       {
-        mkn_account_id: 'same',
+        account_id: 'same',
         username: 'a',
         units: 'CHI_CUC:22',
         password_bcrypt: 'x',
         role: 'PHO',
       },
       {
-        mkn_account_id: 'same',
+        account_id: 'same',
         username: 'b',
         units: 'CHI_CUC:22',
         password_bcrypt: 'x',
@@ -294,15 +295,15 @@ describe('checkRows', () => {
       }
     );
 
-    expect(codesOf(first!)).toEqual(['MKN_ID_DUPLICATE_IN_FILE']);
+    expect(codesOf(first!)).toEqual(['SOURCE_ID_DUPLICATE_IN_FILE']);
     expect(hasBlockingIssue(second!)).toBe(true);
   });
 
   it('drops an email or phone shared by two selected rows', () => {
     const shared = { email: 'same@example.com', phone: '0912 000 111', units: 'CHI_CUC:22' };
     const [first, second] = reviewOf(
-      { ...shared, mkn_account_id: 'a1', username: 'a', password_bcrypt: 'x', role: 'PHO' },
-      { ...shared, mkn_account_id: 'a2', username: 'b', password_bcrypt: 'x', role: 'PHO' }
+      { ...shared, account_id: 'a1', username: 'a', password_bcrypt: 'x', role: 'PHO' },
+      { ...shared, account_id: 'a2', username: 'b', password_bcrypt: 'x', role: 'PHO' }
     );
 
     expect(codesOf(first!)).toEqual(['EMAIL_DROPPED', 'PHONE_DROPPED']);
