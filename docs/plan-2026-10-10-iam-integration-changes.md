@@ -9,10 +9,11 @@ Quyết định đã chốt (tóm tắt): IAM giữ người, đơn vị, chức
 quyền. Không dùng `organization_scopes`. Cây tổ chức nhiều tầng qua `custom_data.parentOrgId`.
 Ba vai trò `role-truong`, `role-pho`, `role-cv`. Id tổ chức viết tắt tiếng Việt (`toan-quoc`, `tinh-qn`, `bp-qn-cr`).
 
-Trạng thái đối chiếu ngày 10/10/2026. Đã commit (nhánh `develop`): nhận `-` trong username (`feat(toolkit)`),
-màn nhập cán bộ (`feat(console)`), kế hoạch và seed SQL (`docs`). CHƯA commit: phần `core` của bước 3
-(`iam-sync.ts`, test, OpenAPI, `init.ts`, `operation-id.ts`) cùng `sample-response.json` và hướng dẫn tích hợp,
-vì hook `tsc` của `core` đang hỏng sẵn ở `phrase.test.ts`, `koa-i18next.test.ts` (bản fork chỉ còn en, vi-VN).
+Trạng thái đối chiếu ngày 10/10/2026. Đã commit trên `develop` (chưa push): nhận `-` trong username
+(`feat(toolkit)`), màn nhập cán bộ (`feat(console)`), kế hoạch và seed SQL (`docs`), bước 3 phía `core`
+(`feat(core)`). Commit `feat(core)` dùng `--no-verify` theo yêu cầu, vì hook `tsc` của `core` hỏng sẵn ở
+`phrase.test.ts`, `koa-i18next.test.ts` (bản fork chỉ còn en, vi-VN); eslint và commitlint đã chạy tay, đạt.
+Còn nợ: 24 test `core` hỏng sẵn ở 8 bộ (ngôn ngữ và thương hiệu sdvico), chưa sửa.
 
 | # | Việc | Trạng thái |
 |---|---|---|
