@@ -109,7 +109,7 @@ const resolveLockoutTargetOrRaw = async (
  * never reach across to another one:
  *
  * - An email always folds, because the lookup matches it case-insensitively. `usernameRegEx`
- *   (`^[A-Z_a-z]\w*$`) admits no `@`, so a value containing one cannot be a username.
+ *   (`^[A-Z_a-z][\w-]*$`) admits no `@`, so a value containing one cannot be a username.
  * - Anything else folds only when the tenant's username policy is case-insensitive, where `Alice`
  *   and `alice` are one account. Under the default case-sensitive policy they are two, and the
  *   admin has to submit the spelling that tripped the lockout.

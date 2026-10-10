@@ -8,14 +8,24 @@
       "status": "active",
       "organizations": [
         {
-          "id": "org-qn",
-          "name": "Chi cục Thủy sản Quảng Ninh"
+          "id": "ccts-qn",
+          "name": "Chi cục Thủy sản Quảng Ninh",
+          "level": "tinh",
+          "type": "CHI_CUC",
+          "parentOrgId": "tinh-qn",
+          "provinceCode": "22",
+          "roleTitles": {
+            "TRUONG": "Chi cục trưởng",
+            "PHO": "Phó Chi cục trưởng",
+            "CHUYEN_VIEN": "Chuyên viên"
+          }
         }
       ],
       "roles": [
         {
           "code": "TRUONG",
-          "name": "Trưởng"
+          "name": "Trưởng",
+          "organizationId": "ccts-qn"
         }
       ],
       "permissions": [
@@ -32,7 +42,6 @@
           "id": "QN01"
         }
       ],
-      "external_ids": {},
       "updated_at": "2026-09-22T03:32:00.313Z"
     },
     {
@@ -43,14 +52,24 @@
       "status": "active",
       "organizations": [
         {
-          "id": "org-qn",
-          "name": "Chi cục Thủy sản Quảng Ninh"
+          "id": "ccts-qn",
+          "name": "Chi cục Thủy sản Quảng Ninh",
+          "level": "tinh",
+          "type": "CHI_CUC",
+          "parentOrgId": "tinh-qn",
+          "provinceCode": "22",
+          "roleTitles": {
+            "TRUONG": "Chi cục trưởng",
+            "PHO": "Phó Chi cục trưởng",
+            "CHUYEN_VIEN": "Chuyên viên"
+          }
         }
       ],
       "roles": [
         {
           "code": "CHUYEN_VIEN",
-          "name": "Chuyên viên"
+          "name": "Chuyên viên",
+          "organizationId": "ccts-qn"
         }
       ],
       "permissions": [
@@ -66,7 +85,6 @@
           "id": "QN001"
         }
       ],
-      "external_ids": {},
       "updated_at": "2026-09-22T03:32:00.313Z"
     },
     {
@@ -77,25 +95,30 @@
       "status": "active",
       "organizations": [
         {
-          "id": "org-chi-cuc-bien-ao-",
-          "name": "Chi cục Biển đảo và Thủy sản thành phố Đà Nẵng"
+          "id": "ccts-dng",
+          "name": "Chi cục Thủy sản Thành phố Đà Nẵng",
+          "level": "tinh",
+          "type": "CHI_CUC",
+          "parentOrgId": "tinh-dng",
+          "provinceCode": "48",
+          "roleTitles": {
+            "TRUONG": "Chi cục trưởng",
+            "PHO": "Phó Chi cục trưởng",
+            "CHUYEN_VIEN": "Chuyên viên"
+          }
         }
       ],
       "roles": [
         {
           "code": "CHUYEN_VIEN",
-          "name": "Chuyên viên"
+          "name": "Chuyên viên",
+          "organizationId": "ccts-dng"
         }
       ],
       "permissions": [
         "iuu:read"
       ],
-      "scopes": [
-        {
-          "type": "port",
-          "id": "org-ban-quan-ly-au-t"
-        }
-      ],
+      "scopes": [],
       "external_ids": {
         "nkkt": "NKKT-00042"
       },

@@ -60,11 +60,15 @@ Không có tham số query (không phân trang, theo yêu cầu). Trả về **t
       "email": "ducchinh030272@gmail.com",
       "status": "active",
       "organizations": [
-        { "id": "org-ban-quan-ly-au-t", "name": "Ban Quản lý Âu thuyền và Cảng cá Đà Nẵng" }
+        {
+          "id": "bqlc-dng", "name": "BQL cảng cá Thành phố Đà Nẵng",
+          "level": "tinh", "type": "BQL_CANG", "parentOrgId": "tinh-dng", "provinceCode": "48",
+          "roleTitles": { "TRUONG": "Trưởng ban", "PHO": "Phó trưởng ban", "CHUYEN_VIEN": "Nhân viên" }
+        }
       ],
-      "roles": [{ "code": "CHUYEN_VIEN", "name": "Chuyên viên" }],
+      "roles": [{ "code": "CHUYEN_VIEN", "name": "Chuyên viên", "organizationId": "bqlc-dng" }],
       "permissions": ["iuu:read"],
-      "scopes": [{ "type": "port", "id": "org-ban-quan-ly-au-t" }],
+      "scopes": [],
       "external_ids": { "nkkt": "NKKT-00042" },
       "updated_at": "2026-09-22T04:11:37.303Z"
     }
@@ -77,11 +81,17 @@ Không có tham số query (không phân trang, theo yêu cầu). Trả về **t
 | `id` | string | **User ID nội bộ của IAM (sdvico/Logto)** — cố định, không đổi theo thời gian. Đây là khoá chính hệ thống ngoài nên lưu lại để đối chiếu. |
 | `username`, `name`, `email` | string \| null | Thông tin hiển thị |
 | `status` | `active` \| `suspended` | Trạng thái tài khoản |
-| `organizations[]` | array | Các tổ chức user thuộc về (trong phạm vi app được phép thấy) |
-| `roles[]` | `{code, name}[]` | `code` ổn định để so sánh trong code (`TRUONG`/`PHO`/`CHUYEN_VIEN`), `name` là nhãn hiển thị tiếng Việt |
+| `organizations[]` | array | Các tổ chức user thuộc về (trong phạm vi app được phép thấy). Mỗi phần tử có `id`, `name` và các trường dưới đây khi tổ chức có khai báo; trường không khai báo thì vắng mặt (không trả `null`) |
+| `organizations[].level` | string | Cấp cũ của IAM: `trung_uong`, `vung`, `tinh`, `co_so`. API dùng `trung_uong` để mở toàn quyền xem |
+| `organizations[].type` | string | Loại đơn vị: `ROOT`, `CUC`, `KN_VUNG`, `TINH`, `CHI_CUC`, `BDBP_TINH`, `BQL_CANG`, `DON_BP`, `CANG`. Hệ tích hợp dùng trường này để tự quy đổi ra quyền |
+| `organizations[].parentOrgId` | string | `id` tổ chức cha trong cây |
+| `organizations[].provinceCode` | string | Mã tỉnh |
+| `organizations[].sourceCode` | string | Mã đồn/cảng ở danh mục gốc (chỉ `DON_BP`, `CANG`) |
+| `organizations[].roleTitles` | object | Tên chức danh theo `roles[].code` tại loại đơn vị này, vd `{ "TRUONG": "Đồn trưởng" }` |
+| `roles[]` | `{code, name, organizationId}[]` | `code` ổn định để so sánh trong code (`TRUONG`/`PHO`/`CHUYEN_VIEN`), `name` là nhãn hiển thị tiếng Việt, `organizationId` là tổ chức nơi giữ vai trò. Người kiêm nhiệm có một phần tử cho mỗi tổ chức |
 | `permissions[]` | string[] | Quyền hạn suy ra từ vai trò (vd `iuu:read`, `iuu:update`) |
 | `scopes[]` | `{type, id}[]` | Data scope: `province`/`ward`/`port`/`vessel` |
-| `external_ids` | object | Map user_id cũ của các hệ thống ngoài (xem mục 4) |
+| `external_ids` | object | Map user_id cũ của các hệ thống ngoài (xem mục 4). Vắng mặt khi user chưa có mã nào |
 | `updated_at` | ISO datetime | Lần cập nhật gần nhất |
 
 ## 3. Cơ chế phân quyền — app thấy được gì?

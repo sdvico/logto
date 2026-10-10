@@ -30,13 +30,13 @@ import domainRoutes from './domain.js';
 import emailTemplateRoutes from './email-template/index.js';
 import experienceApiRoutes from './experience/index.js';
 import hookRoutes from './hook.js';
-import iamSyncRoutes, { iamSyncAdminPreviewRoutes } from './iam-sync.js';
-import permissionAuditRoutes from './permission-audit.js';
+import { iamSyncRoutes, iamSyncAdminPreviewRoutes } from './iam-sync.js';
 import interactionRoutes from './interaction/index.js';
 import logRoutes from './log.js';
 import logtoConfigRoutes from './logto-config/index.js';
 import oneTimeTokenRoutes from './one-time-tokens.js';
 import organizationRoutes from './organization/index.js';
+import permissionAuditRoutes from './permission-audit.js';
 import publicWellKnownRoutes from './public-wellknown.js';
 import resourceRoutes from './resource.js';
 import resourceScopeRoutes from './resource.scope.js';
@@ -106,7 +106,7 @@ const createRouters = (tenant: TenantContext) => {
   iamSyncAdminPreviewRoutes(managementRouter, tenant);
   permissionAuditRoutes(managementRouter, tenant);
 
-  // sdvico IAM Sync API: xac thuc rieng (API Resource + scope "iam-sync:read"), KHONG dung
+  // Sdvico IAM Sync API: xac thuc rieng (API Resource + scope "iam-sync:read"), KHONG dung
   // chung guard scope 'all' cua managementRouter o tren - xem routes/iam-sync.ts.
   const iamSyncRouter: AnonymousRouter = new Router();
   iamSyncRoutes(iamSyncRouter, tenant);
@@ -130,14 +130,27 @@ const createRouters = (tenant: TenantContext) => {
 
   wellKnownOpenApiRoutes(anonymousRouter, {
     experienceRouters: [experienceRouter],
-    managementRouters: [managementRouter, anonymousRouter],
+    managementRouters: [managementRouter, anonymousRouter, iamSyncRouter],
     userRouters: [userRouter],
   });
 
   // The swagger.json should contain all API routers.
-  swaggerRoutes(anonymousRouter, [managementRouter, anonymousRouter, experienceRouter, userRouter]);
+  swaggerRoutes(anonymousRouter, [
+    managementRouter,
+    anonymousRouter,
+    iamSyncRouter,
+    experienceRouter,
+    userRouter,
+  ]);
 
-  return [experienceRouter, interactionRouter, managementRouter, anonymousRouter, userRouter, iamSyncRouter];
+  return [
+    experienceRouter,
+    interactionRouter,
+    managementRouter,
+    anonymousRouter,
+    userRouter,
+    iamSyncRouter,
+  ];
 };
 
 export default function initApis(tenant: TenantContext): Koa {

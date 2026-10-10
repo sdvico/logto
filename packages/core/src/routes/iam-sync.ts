@@ -1,5 +1,5 @@
-import { type OrganizationRoleEntity } from '@logto/schemas';
-import { boolean, object, string, z } from 'zod';
+import { type Nullable } from '@silverhand/essentials';
+import { object, string, z } from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
 import { verifyBearerTokenFromRequest } from '#src/middleware/koa-auth/index.js';
@@ -8,7 +8,7 @@ import assertThat from '#src/utils/assert-that.js';
 import type { AnonymousRouter, ManagementApiRouter, RouterInitArgs } from './types.js';
 
 /**
- * sdvico IAM Sync API — cho các hệ thống ngoài (IUU/MKN/CBVMS) đồng bộ danh sách user.
+ * Sdvico IAM Sync API — cho các hệ thống ngoài (IUU/MKN/CBVMS) đồng bộ danh sách user.
  *
  * Xác thực RIÊNG (không dùng chung scope `all` của Management API nữa): API Resource
  * "https://<tenantId>.logto.app/iam-sync" + scope "iam-sync:read". Mỗi M2M app IUU/MKN/CBVMS
@@ -26,15 +26,39 @@ const IAM_SYNC_REQUIRED_SCOPE = 'iam-sync:read';
 
 const getIamSyncResourceIndicator = (tenantId: string) => `https://${tenantId}.logto.app/iam-sync`;
 
-const getOrganizationLevel = (customData: unknown): string | undefined => {
-  if (typeof customData !== 'object' || customData === null) {
+const customDataGuard = z.record(z.unknown());
+
+const getCustomDataField = (customData: unknown, key: string): unknown => {
+  const parsed = customDataGuard.safeParse(customData);
+  return parsed.success ? parsed.data[key] : undefined;
+};
+
+const getCustomDataString = (customData: unknown, key: string): string | undefined => {
+  const value = getCustomDataField(customData, key);
+
+  return typeof value === 'string' ? value : undefined;
+};
+
+/** Object chuỗi → chuỗi (vd `roleTitles`, `externalIds`); bỏ các giá trị không phải chuỗi. */
+const getCustomDataStringRecord = (
+  customData: unknown,
+  key: string
+): Record<string, string> | undefined => {
+  const value = getCustomDataField(customData, key);
+
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return undefined;
   }
 
-  const { level } = customData as Record<string, unknown>;
+  const entries = Object.entries(value).filter(
+    (entry): entry is [string, string] => typeof entry[1] === 'string'
+  );
 
-  return typeof level === 'string' ? level : undefined;
+  return entries.length > 0 ? Object.fromEntries(entries) : undefined;
 };
+
+const getOrganizationLevel = (customData: unknown): string | undefined =>
+  getCustomDataString(customData, 'level');
 
 /**
  * Cha trực tiếp của tổ chức trong cây phân cấp thật (vd Cảng thuộc Chi cục quản lý), lưu ở
@@ -42,41 +66,54 @@ const getOrganizationLevel = (customData: unknown): string | undefined => {
  * quản lý (dữ liệu nguồn không nêu rõ) — org nào chưa rõ thì field này là null/undefined và
  * chỉ hiện diện độc lập (không tự động lộ ra cho app cấp tỉnh nào).
  */
-const getParentOrgId = (customData: unknown): string | undefined => {
-  if (typeof customData !== 'object' || customData === null) {
-    return undefined;
-  }
+const getParentOrgId = (customData: unknown): string | undefined =>
+  getCustomDataString(customData, 'parentOrgId');
 
-  const { parentOrgId } = customData as Record<string, unknown>;
+/**
+ * Thông tin tổ chức trả cho hệ thống ngoài, để họ tự quy đổi ra quyền (loại đơn vị, tỉnh, mã
+ * đồn/cảng nguồn, tên chức danh). Trường nào không có trong `custom_data` thì bỏ khỏi đối tượng.
+ */
+const toSyncOrganization = ({
+  id,
+  name,
+  customData,
+}: {
+  id: string;
+  name: string;
+  customData: unknown;
+}) => ({
+  id,
+  name,
+  level: getOrganizationLevel(customData),
+  type: getCustomDataString(customData, 'type'),
+  parentOrgId: getParentOrgId(customData),
+  provinceCode: getCustomDataString(customData, 'provinceCode'),
+  sourceCode: getCustomDataString(customData, 'sourceCode'),
+  roleTitles: getCustomDataStringRecord(customData, 'roleTitles'),
+});
 
-  return typeof parentOrgId === 'string' ? parentOrgId : undefined;
-};
+type SyncOrganization = ReturnType<typeof toSyncOrganization>;
 
-type DataScope = {
-  province?: string[];
-  ward?: string[];
-  port?: string[];
-  vessel?: string[];
-};
+const scopeTypes = Object.freeze(['province', 'ward', 'port', 'vessel'] as const);
 
+type DataScope = Partial<Record<(typeof scopeTypes)[number], string[]>>;
+
+const stringArrayGuard = z.string().array();
+
+/** Khoá nào không phải mảng chuỗi thì bỏ riêng khoá đó, không bỏ cả phạm vi. */
 const getDataScope = (customData: unknown): DataScope => {
-  if (typeof customData !== 'object' || customData === null) {
-    return {};
-  }
+  const dataScope = getCustomDataField(customData, 'dataScope');
 
-  const { dataScope } = customData as Record<string, unknown>;
-
-  if (typeof dataScope !== 'object' || dataScope === null) {
-    return {};
-  }
-
-  return dataScope as DataScope;
+  return Object.fromEntries(
+    scopeTypes.flatMap((type) => {
+      const parsed = stringArrayGuard.safeParse(getCustomDataField(dataScope, type));
+      return parsed.success ? [[type, parsed.data]] : [];
+    })
+  );
 };
 
 const flattenScopes = (dataScope: DataScope): Array<{ type: string; id: string }> =>
-  (['province', 'ward', 'port', 'vessel'] as const).flatMap((type) =>
-    (dataScope[type] ?? []).map((id) => ({ type, id }))
-  );
+  scopeTypes.flatMap((type) => (dataScope[type] ?? []).map((id) => ({ type, id })));
 
 /**
  * Code ổn định cho vai trò (vd "CHUYEN_VIEN"), để hệ thống ngoài switch/if theo code thay vì
@@ -95,16 +132,32 @@ const getRoleCode = (roleId: string): string =>
   roleId
     .replace(/^role-/, '')
     .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '_');
+    .replaceAll(/[^\dA-Z]+/g, '_');
 
 const syncUserGuard = object({
   id: string(),
   username: string().nullable(),
   name: string().nullable(),
   status: z.enum(['active', 'suspended']),
-  organizations: object({ id: string(), name: string() }).array(),
-  roles: object({ code: string(), name: string() }).array(),
+  organizations: object({
+    id: string(),
+    name: string(),
+    level: string().optional(),
+    type: string().optional(),
+    parentOrgId: string().optional(),
+    provinceCode: string().optional(),
+    sourceCode: string().optional(),
+    roleTitles: z.record(string()).optional(),
+  }).array(),
+  roles: object({
+    code: string(),
+    name: string(),
+    /** Tổ chức nơi người dùng giữ vai trò này; người kiêm nhiệm có một phần tử mỗi tổ chức. */
+    organizationId: string().optional(),
+  }).array(),
   scopes: object({ type: string(), id: string() }).array(),
+  /** Mã người dùng ở các hệ cũ, đội IAM ghi vào `users.custom_data.externalIds`. */
+  external_ids: z.record(string()).optional(),
   updated_at: string(),
 });
 
@@ -117,24 +170,29 @@ const syncUsersResponseGuard = object({ data: syncUserGuard.array() });
  */
 const collectSyncUsers = async (
   organizations: RouterInitArgs<AnonymousRouter>[1]['queries']['organizations'],
-  visibleOrganizations: ReadonlyArray<{ id: string; name: string }>
+  visibleOrganizations: ReadonlyArray<{ id: string; name: string; customData: unknown }>
 ) => {
   const usersById = new Map<
     string,
     {
       id: string;
-      username: string | null;
-      name: string | null;
+      username: Nullable<string>;
+      name: Nullable<string>;
       isSuspended: boolean;
       customData: unknown;
       updatedAt: number;
-      organizations: Map<string, string>;
-      /** roleId -> roleName, giữ nguyên cặp id/name để suy code ổn định ở bước sau. */
-      roles: Map<string, string>;
+      organizations: Map<string, SyncOrganization>;
+      /**
+       * Khoá `orgId:roleId`: cùng một vai trò ở hai tổ chức là hai phần tử. Giữ nguyên roleId
+       * để suy code ổn định ở bước sau.
+       */
+      roles: Map<string, { roleId: string; name: string; organizationId: string }>;
     }
   >();
 
   for (const org of visibleOrganizations) {
+    const syncOrganization = toSyncOrganization(org);
+    // eslint-disable-next-line no-await-in-loop -- one organization at a time keeps DB pool usage bounded
     const [, orgUsers] = await organizations.relations.users.getUsersByOrganizationId(org.id, {
       limit: 1000,
       offset: 0,
@@ -148,13 +206,18 @@ const collectSyncUsers = async (
         isSuspended: user.isSuspended,
         customData: user.customData,
         updatedAt: user.updatedAt,
-        organizations: new Map<string, string>(),
-        roles: new Map<string, string>(),
+        organizations: new Map<string, SyncOrganization>(),
+        roles: new Map<string, { roleId: string; name: string; organizationId: string }>(),
       };
 
-      existing.organizations.set(org.id, org.name);
-      for (const role of user.organizationRoles as OrganizationRoleEntity[]) {
-        existing.roles.set(role.id, role.name);
+      existing.organizations.set(org.id, syncOrganization);
+      // `organizationRoles` chỉ gồm vai trò của người dùng trong đúng tổ chức `org`.
+      for (const role of user.organizationRoles) {
+        existing.roles.set(`${org.id}:${role.id}`, {
+          roleId: role.id,
+          name: role.name,
+          organizationId: org.id,
+        });
       }
 
       usersById.set(user.id, existing);
@@ -166,9 +229,14 @@ const collectSyncUsers = async (
     username: user.username,
     name: user.name,
     status: user.isSuspended ? ('suspended' as const) : ('active' as const),
-    organizations: [...user.organizations.entries()].map(([id, name]) => ({ id, name })),
-    roles: [...user.roles.entries()].map(([id, name]) => ({ code: getRoleCode(id), name })),
+    organizations: [...user.organizations.values()],
+    roles: [...user.roles.values()].map(({ roleId, name, organizationId }) => ({
+      code: getRoleCode(roleId),
+      name,
+      organizationId,
+    })),
     scopes: flattenScopes(getDataScope(user.customData)),
+    external_ids: getCustomDataStringRecord(user.customData, 'externalIds'),
     updated_at: new Date(user.updatedAt).toISOString(),
   }));
 };
@@ -247,9 +315,8 @@ export function iamSyncRoutes<T extends AnonymousRouter>(...[router, tenant]: Ro
     );
 
     // Org nào mà M2M app này là thành viên (organization_application_relations).
-    const [, appOrganizations] = await organizations.relations.apps.getOrganizationsByApplicationId(
-      clientId
-    );
+    const [, appOrganizations] =
+      await organizations.relations.apps.getOrganizationsByApplicationId(clientId);
 
     assertThat(
       appOrganizations.length > 0,

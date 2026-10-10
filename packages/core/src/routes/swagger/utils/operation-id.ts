@@ -33,6 +33,9 @@ export const customRoutes: Readonly<RouteDictionary> = Object.freeze({
   'get /authn/hasura': 'GetHasuraAuth',
   'post /authn/saml/:connectorId': 'AssertSaml',
   'post /authn/single-sign-on/saml/:connectorId': 'AssertSingleSignOnSaml',
+  // IAM Sync (sdvico)
+  'get /iam-sync/v1/users': 'ListIamSyncUsers',
+  'get /iam-sync-preview/users': 'ListIamSyncPreviewUsers',
   // Organization users
   'post /organizations/:id/users': 'AddOrganizationUsers',
   'post /organizations/:id/users/roles': 'AssignOrganizationRolesToUsers',

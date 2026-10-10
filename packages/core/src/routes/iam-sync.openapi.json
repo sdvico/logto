@@ -1,0 +1,171 @@
+{
+  "tags": [
+    {
+      "name": "Iam sync",
+      "description": "sdvico IAM Sync API for external systems (IUU, MKN, CBVMS) to synchronize users, their organizations and organization roles. Authenticated with its own API resource, not the Management API."
+    },
+    {
+      "name": "Iam sync preview",
+      "description": "Admin Console preview of the data that the IAM Sync API returns."
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "IamSyncOAuth2": {
+        "type": "oauth2",
+        "description": "Machine-to-machine access token for the IAM Sync API. Request it with `grant_type=client_credentials`, `resource=https://<tenant-id>.logto.app/iam-sync` and `scope=iam-sync:read`. A token issued for the Management API is rejected with 401.",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/oidc/token",
+            "scopes": {
+              "iam-sync:read": "Read users, their organizations and organization roles."
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "IamSyncUser": {
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "name",
+          "status",
+          "organizations",
+          "roles",
+          "scopes",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Stable IAM user ID. External systems should store it as the permanent link key."
+          },
+          "username": { "type": "string", "nullable": true },
+          "name": { "type": "string", "nullable": true },
+          "status": { "type": "string", "enum": ["active", "suspended"] },
+          "organizations": {
+            "type": "array",
+            "description": "Organizations the user belongs to, limited to those the calling application may see. Optional fields are omitted when the organization does not define them.",
+            "items": {
+              "type": "object",
+              "required": ["id", "name"],
+              "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" },
+                "level": {
+                  "type": "string",
+                  "description": "Legacy IAM level: `trung_uong`, `vung`, `tinh` or `co_so`. Only `trung_uong` widens what an application may see."
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Unit type: `ROOT`, `CUC`, `KN_VUNG`, `TINH`, `CHI_CUC`, `BDBP_TINH`, `BQL_CANG`, `DON_BP` or `CANG`. External systems map it to their own permissions."
+                },
+                "parentOrgId": {
+                  "type": "string",
+                  "description": "ID of the parent organization in the tree."
+                },
+                "provinceCode": { "type": "string", "description": "State province code." },
+                "sourceCode": {
+                  "type": "string",
+                  "description": "Code of the border post or port in the source catalog (`DON_BP` and `CANG` only)."
+                },
+                "roleTitles": {
+                  "type": "object",
+                  "description": "Job title of each role code at this unit type, e.g. `{ \"TRUONG\": \"Đồn trưởng\" }`.",
+                  "additionalProperties": { "type": "string" }
+                }
+              }
+            }
+          },
+          "roles": {
+            "type": "array",
+            "description": "Organization roles. A user holding roles in several organizations has one entry per organization.",
+            "items": {
+              "type": "object",
+              "required": ["code", "name"],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Stable role code: `TRUONG`, `PHO`, `CHUYEN_VIEN`, or a code derived from the role ID."
+                },
+                "name": { "type": "string", "description": "Display name of the role." },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization where the user holds this role."
+                }
+              }
+            }
+          },
+          "scopes": {
+            "type": "array",
+            "description": "Per-user data scope from `custom_data.dataScope`.",
+            "items": {
+              "type": "object",
+              "required": ["type", "id"],
+              "properties": {
+                "type": { "type": "string", "enum": ["province", "ward", "port", "vessel"] },
+                "id": { "type": "string" }
+              }
+            }
+          },
+          "external_ids": {
+            "type": "object",
+            "description": "User IDs in legacy systems, keyed by system name (e.g. `mkn`). Omitted when the user has none.",
+            "additionalProperties": { "type": "string" }
+          },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "IamSyncUsersResponse": {
+        "type": "object",
+        "required": ["data"],
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/IamSyncUser" } }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/iam-sync/v1/users": {
+      "get": {
+        "summary": "List users for synchronization",
+        "description": "Return every user the calling machine-to-machine application may see, without pagination (up to 1000 users per organization). An application that is a member of an organization with `level = trung_uong` sees users of all organizations; otherwise it sees users of its organizations and their descendants via `parentOrgId`. Fields are only ever added, never renamed or removed.",
+        "security": [{ "IamSyncOAuth2": ["iam-sync:read"] }],
+        "responses": {
+          "200": {
+            "description": "Users visible to the calling application.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IamSyncUsersResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-sync:read` scope, or the application is not a member of any organization."
+          }
+        }
+      }
+    },
+    "/api/iam-sync-preview/users": {
+      "get": {
+        "summary": "Preview IAM sync users",
+        "description": "Return every user of every organization in the same shape as the IAM Sync API. Used by the Admin Console to preview what external systems receive.",
+        "responses": {
+          "200": {
+            "description": "All users in the IAM Sync API shape.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IamSyncUsersResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
