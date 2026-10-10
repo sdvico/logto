@@ -130,7 +130,8 @@ export const buildHandler: Handler = (envSet, queries, appAccess) => async (ctx)
     appAccess,
     client.clientId,
     account.accountId,
-    client.metadata().appLevelAccessControlEnabled
+    client.metadata().appLevelAccessControlEnabled,
+    client.metadata().iamSignInBlocked
   );
 
   // Pre-generate grant ID to avoid a separate DB write just to obtain it.

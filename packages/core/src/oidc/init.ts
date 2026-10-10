@@ -56,6 +56,7 @@ import {
   extraClientMetadataKeys,
   hasAppLevelAccessControlChecked,
   markAppLevelAccessControlCheckedForOidcContext,
+  signInBlockedMetadataKey,
 } from './application-access-control.js';
 import { getExtraTokenClaimsForAuthenticationContext } from './authentication-context-claims.js';
 import { buildClientIdMetadataDocumentFeature, isCimdClient } from './cimd/index.js';
@@ -354,7 +355,8 @@ export default function initOidc(
           libraries.applicationAccessControl,
           client.clientId,
           account.accountId,
-          client.metadata().appLevelAccessControlEnabled
+          client.metadata().appLevelAccessControlEnabled,
+          client.metadata().iamSignInBlocked
         );
         markAppLevelAccessControlCheckedForOidcContext(
           ctx.oidc,
@@ -426,13 +428,13 @@ export default function initOidc(
     extraClientMetadata: {
       properties: [...extraClientMetadataKeys],
       validator: (_, key, value) => {
-        if (key === appLevelAccessControlMetadataKey) {
+        if (key === appLevelAccessControlMetadataKey || key === signInBlockedMetadataKey) {
           if (value === undefined) {
             return;
           }
 
           if (typeof value !== 'boolean') {
-            throw new errors.InvalidClientMetadata(appLevelAccessControlMetadataKey);
+            throw new errors.InvalidClientMetadata(key);
           }
 
           return;

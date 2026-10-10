@@ -14,9 +14,13 @@ import snakecaseKeys from 'snakecase-keys';
 
 import { EnvSet } from '#src/env-set/index.js';
 import { getTenantUrls } from '#src/env-set/utils.js';
+import { isApplicationSignInBlocked } from '#src/libraries/application-access-control.js';
 import type Queries from '#src/tenants/Queries.js';
 
-import { appLevelAccessControlMetadataKey } from './application-access-control.js';
+import {
+  appLevelAccessControlMetadataKey,
+  signInBlockedMetadataKey,
+} from './application-access-control.js';
 import { isCimdClient } from './cimd/index.js';
 import { getConstantClientMetadata } from './utils.js';
 
@@ -160,6 +164,7 @@ export default function postgresAdapter(
         oidcClientMetadata,
         customClientMetadata,
         appLevelAccessControlEnabled,
+        customData,
       }: CreateApplication,
       clientScopes?: string[]
     ): AllClientMetadata => ({
@@ -167,6 +172,7 @@ export default function postgresAdapter(
       client_secret,
       client_name,
       [appLevelAccessControlMetadataKey]: appLevelAccessControlEnabled,
+      [signInBlockedMetadataKey]: isApplicationSignInBlocked(customData),
       ...getConstantClientMetadata(envSet, type, customClientMetadata),
       ...transpileMetadata(client_id, snakecaseKeys(oidcClientMetadata)),
       // `node-oidc-provider` won't camelCase custom parameter keys, so we need to keep the keys camelCased

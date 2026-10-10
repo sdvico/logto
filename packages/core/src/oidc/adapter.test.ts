@@ -84,6 +84,7 @@ describe('postgres Adapter', () => {
       client_name,
       client_secret,
       appLevelAccessControlEnabled: mockApplication.appLevelAccessControlEnabled,
+      iamSignInBlocked: false,
       ...getConstantClientMetadata(mockEnvSet, type),
       ...snakecaseKeys(oidcClientMetadata),
       ...customClientMetadata,
@@ -109,6 +110,26 @@ describe('postgres Adapter', () => {
     await expect(adapter.find('foo')).resolves.toMatchObject({
       appLevelAccessControlEnabled: true,
     });
+  });
+
+  // Sdvico: the IAM "block all sign-ins" switch rides on the client metadata for OIDC checks.
+  it('includes the sign-in block from custom data in client metadata', async () => {
+    const adapter = postgresAdapter(
+      mockEnvSet,
+      new MockQueries({
+        applications: {
+          findApplicationById: jest.fn(
+            async (): Promise<Application> => ({
+              ...mockApplication,
+              customData: { iamLogin: { mode: 'blocked' } },
+            })
+          ),
+        },
+      }),
+      'Client'
+    );
+
+    await expect(adapter.find('foo')).resolves.toMatchObject({ iamSignInBlocked: true });
   });
 
   it('Access Token Model', async () => {

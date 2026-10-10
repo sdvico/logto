@@ -5,6 +5,8 @@ import RequestError from '#src/errors/RequestError/index.js';
 import type Libraries from '#src/tenants/Libraries.js';
 
 export const appLevelAccessControlMetadataKey = 'appLevelAccessControlEnabled';
+/** Sdvico: client metadata key carrying `isApplicationSignInBlocked` for the OIDC checks. */
+export const signInBlockedMetadataKey = 'iamSignInBlocked';
 
 /**
  * Every extra client metadata key Logto registers on the provider — the single source for
@@ -14,6 +16,7 @@ export const appLevelAccessControlMetadataKey = 'appLevelAccessControlEnabled';
 export const extraClientMetadataKeys = Object.freeze([
   ...Object.values(CustomClientMetadataKey),
   appLevelAccessControlMetadataKey,
+  signInBlockedMetadataKey,
 ]);
 
 const appLevelAccessControlInteractionResultKey = 'appLevelAccessControl';
@@ -71,8 +74,14 @@ export const assertUserHasApplicationAccessForOidc = async (
   applicationAccessControl: Libraries['applicationAccessControl'],
   applicationId: string,
   userId: string,
-  appLevelAccessControlEnabled?: boolean
+  appLevelAccessControlEnabled: boolean | undefined,
+  // Bắt buộc truyền (kể cả `undefined`) để nơi gọi mới không quên chặn app đang khoá đăng nhập.
+  signInBlocked: boolean | undefined
 ) => {
+  if (signInBlocked) {
+    throw new errors.AccessDenied('Sign-in to this application is blocked.');
+  }
+
   try {
     await applicationAccessControl.assertUserHasApplicationAccess(
       applicationId,

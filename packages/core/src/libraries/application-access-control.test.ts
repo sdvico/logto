@@ -107,6 +107,20 @@ describe('assertUserHasApplicationAccess()', () => {
     expect(hasUserApplicationAccess).toHaveBeenCalledWith(applicationId, userId);
   });
 
+  // Sdvico: an application can be blocked for everyone, independent of the access-control rules.
+  it('denies a blocked application without checking access-control rules', async () => {
+    findApplicationById.mockResolvedValueOnce({
+      ...disabledApplication,
+      customData: { iamLogin: { mode: 'blocked' } },
+    });
+
+    await expect(
+      createLibrary().assertUserHasApplicationAccess(applicationId, userId)
+    ).rejects.toMatchObject(new RequestError('oidc.access_denied'));
+
+    expect(hasUserApplicationAccess).not.toHaveBeenCalled();
+  });
+
   it('denies enabled config with no matching rules', async () => {
     await expect(
       createLibrary().assertUserHasApplicationAccess(applicationId, userId)

@@ -15,6 +15,7 @@ import { MockTenant } from '#src/test-utils/tenant.js';
 
 import {
   appLevelAccessControlMetadataKey,
+  signInBlockedMetadataKey,
   hasAppLevelAccessControlChecked,
   markAppLevelAccessControlChecked,
 } from './application-access-control.js';
@@ -191,6 +192,29 @@ describe('oidc provider init', () => {
 
     expect(() =>
       configuration.extraClientMetadata.validator(ctx, appLevelAccessControlMetadataKey, 'true', {
+        client_id: clientId,
+      })
+    ).toThrow(errors.InvalidClientMetadata);
+  });
+
+  it('should validate the sign-in block client metadata as a boolean', async () => {
+    const tenant = new MockTenant();
+    const provider = createProvider(tenant);
+    const configuration = getProviderConfiguration(provider);
+    const ctx = createOidcContext({ provider });
+
+    expect(() =>
+      configuration.extraClientMetadata.validator(ctx, signInBlockedMetadataKey, true, {
+        client_id: clientId,
+      })
+    ).not.toThrow();
+    expect(() =>
+      configuration.extraClientMetadata.validator(ctx, signInBlockedMetadataKey, undefined, {
+        client_id: clientId,
+      })
+    ).not.toThrow();
+    expect(() =>
+      configuration.extraClientMetadata.validator(ctx, signInBlockedMetadataKey, 'true', {
         client_id: clientId,
       })
     ).toThrow(errors.InvalidClientMetadata);
