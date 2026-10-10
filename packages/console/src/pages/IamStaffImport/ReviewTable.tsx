@@ -5,7 +5,7 @@ import Select from '@/ds-components/Select';
 
 import styles from './index.module.scss';
 import { roleCodes, type RoleCode } from './review-rules';
-import { type DraftRow, type ImportOrganization } from './staff-rows';
+import { type DraftRow, type ImportOrganization, roleTitleOf } from './staff-rows';
 
 const roleTitles: Readonly<Record<RoleCode, string>> = Object.freeze({
   TRUONG: 'Trưởng',
@@ -33,7 +33,7 @@ function ReviewTable({ drafts, organizations, onChange }: Props) {
             <th>Họ tên</th>
             <th>Tổ chức</th>
             <th>Chức danh</th>
-            <th>Quyền ở MKN</th>
+            <th>Đơn vị ở MKN</th>
             <th>Cần xem</th>
           </tr>
         </thead>
@@ -95,6 +95,9 @@ function ReviewTable({ drafts, organizations, onChange }: Props) {
                       </button>
                     </span>
                   ))}
+                  {draft.organizations.length === 0 && draft.source.unitNames && (
+                    <div className={styles.muted}>Tệp gợi ý: {draft.source.unitNames}</div>
+                  )}
                   <div className={styles.picker}>
                     <Select<string>
                       isSearchEnabled
@@ -121,11 +124,14 @@ function ReviewTable({ drafts, organizations, onChange }: Props) {
                       }
                     }}
                   />
+                  <div className={styles.muted}>{roleTitleOf(draft)}</div>
                 </td>
-                <td className={styles.muted}>
-                  {draft.source.mknGroups || '-'}
-                  <br />
-                  {draft.source.mknScopes || '-'}
+                <td>
+                  <div>{draft.source.agencyName || '-'}</div>
+                  <div className={styles.muted}>
+                    {draft.source.mknScopePlaces || draft.source.mknScopes || '-'}
+                  </div>
+                  <div className={styles.muted}>Nhóm: {draft.source.mknGroups || '-'}</div>
                 </td>
                 <td>
                   <ul className={styles.issues}>

@@ -6,6 +6,7 @@ import {
   type ImportLookup,
   normalizePhone,
   parseStaffFile,
+  roleTitleOf,
   requiredColumns,
   suggestUsername,
   unitKeyOf,
@@ -64,6 +65,32 @@ describe('parseStaffFile', () => {
     });
   });
 
+  it('reads the optional location columns, and leaves them empty for an older file', () => {
+    const newFile = toCsv([
+      [...header, 'agency_name', 'unit_names', 'mkn_scope_places', 'role_title'],
+      [
+        ...header.map((column) => (column === 'username' ? 'cang' : '')),
+        'BQL cảng cá Tam Quan',
+        'Cảng cá Tam Quan · Gia Lai',
+        'Tam Quan · Gia Lai (HANDLE)',
+        'Nhân viên',
+      ],
+    ]);
+
+    expect(parseStaffFile(newFile).rows[0]).toMatchObject({
+      agencyName: 'BQL cảng cá Tam Quan',
+      unitNames: 'Cảng cá Tam Quan · Gia Lai',
+      mknScopePlaces: 'Tam Quan · Gia Lai (HANDLE)',
+      roleTitle: 'Nhân viên',
+    });
+    expect(parseStaffFile(fileOf({ username: 'old' })).rows[0]).toMatchObject({
+      agencyName: '',
+      unitNames: '',
+      mknScopePlaces: '',
+      roleTitle: '',
+    });
+  });
+
   it('rejects a file without the export columns', () => {
     expect(parseStaffFile('username,name\na,b').error).toContain('mkn_account_id');
   });
@@ -89,6 +116,37 @@ describe('suggestUsername and normalizePhone', () => {
 
   it('keeps digits only', () => {
     expect(normalizePhone('+84 912.345-678')).toBe('84912345678');
+  });
+});
+
+describe('roleTitleOf', () => {
+  const [draft] = reviewOf({
+    mkn_account_id: 'a1',
+    username: 'a',
+    units: 'CHI_CUC:22',
+    password_bcrypt: 'x',
+  });
+  const titled = {
+    ...draft!,
+    organizations: [
+      { id: 'bp-qn-cr', name: 'Trạm', roleTitles: { TRUONG: 'Đồn trưởng', CHUYEN_VIEN: 'Cán bộ' } },
+    ],
+  };
+
+  it('uses the title of the chosen organization and follows the selected role', () => {
+    expect(roleTitleOf(titled)).toBe('Cán bộ');
+    expect(roleTitleOf({ ...titled, role: 'TRUONG' })).toBe('Đồn trưởng');
+  });
+
+  it('falls back to the file title only while the role is unchanged', () => {
+    const withFileTitle = {
+      ...draft!,
+      organizations: [],
+      source: { ...draft!.source, roleTitle: 'Nhân viên' },
+    };
+
+    expect(roleTitleOf(withFileTitle)).toBe('Nhân viên');
+    expect(roleTitleOf({ ...withFileTitle, role: 'PHO' })).toBe('');
   });
 });
 

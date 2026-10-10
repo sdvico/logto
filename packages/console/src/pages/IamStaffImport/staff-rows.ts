@@ -24,7 +24,15 @@ export const requiredColumns = Object.freeze([
   'note',
 ] as const);
 
-type Column = (typeof requiredColumns)[number];
+/** Cột chỉ để đọc, thêm sau (10/10); tệp cũ không có thì để trống. */
+const optionalColumns = Object.freeze([
+  'agency_name',
+  'unit_names',
+  'mkn_scope_places',
+  'role_title',
+] as const);
+
+type Column = (typeof requiredColumns)[number] | (typeof optionalColumns)[number];
 
 type StaffRow = {
   /** Số dòng trong tệp (dòng tiêu đề là 1), dùng làm khoá ổn định. */
@@ -42,6 +50,14 @@ type StaffRow = {
   mknGroups: string;
   mknScopes: string;
   note: string;
+  /** Đơn vị ghi trong tài khoản MKN, vd "BQL cảng cá Tam Quan". */
+  agencyName: string;
+  /** Tên đơn vị IAM mà script đã suy ra, vd "Cảng cá Tam Quan · Gia Lai". */
+  unitNames: string;
+  /** Vị trí các phạm vi đang có ở MKN, kèm mức. */
+  mknScopePlaces: string;
+  /** Tên chức danh mặc định theo loại đơn vị, vd "Nhân viên". */
+  roleTitle: string;
 };
 
 const tryParseCsv = (text: string): { cells: string[][]; error?: string } => {
@@ -95,12 +111,21 @@ export const parseStaffFile = (text: string): { rows: StaffRow[]; error?: string
       mknGroups: cell(cells, 'mkn_groups'),
       mknScopes: cell(cells, 'mkn_scopes'),
       note: cell(cells, 'note'),
+      agencyName: cell(cells, 'agency_name'),
+      unitNames: cell(cells, 'unit_names'),
+      mknScopePlaces: cell(cells, 'mkn_scope_places'),
+      roleTitle: cell(cells, 'role_title'),
     })),
   };
 };
 
 /** Tổ chức Logto tra theo khoá đơn vị (`LOẠI` hoặc `LOẠI:mã`). */
-export type ImportOrganization = { id: string; name: string };
+export type ImportOrganization = {
+  id: string;
+  name: string;
+  /** Tên chức danh theo mã ở loại đơn vị này (`custom_data.roleTitles`), vd `{ TRUONG: 'Đồn trưởng' }`. */
+  roleTitles?: Readonly<Record<string, string>>;
+};
 
 /** Trạng thái Logto mà bước Soát cần. Khoá chữ đã đưa về chữ thường. */
 export type ImportLookup = {
@@ -231,6 +256,27 @@ export const checkRows = (drafts: readonly DraftRow[], lookup: ImportLookup): Dr
       issues: rules.flatMap((rule) => rule(context) ?? []),
     };
   });
+};
+
+/**
+ * Tên chức danh thật theo tổ chức đã chọn (`custom_data.roleTitles`), vd "Đồn trưởng"; chưa có tổ chức
+ * thì dùng tên trong tệp khi người duyệt chưa đổi chức danh.
+ */
+export const roleTitleOf = (draft: DraftRow) => {
+  const titles = [
+    ...new Set(
+      draft.organizations.flatMap(({ roleTitles }) => {
+        const title = roleTitles?.[draft.role];
+        return title ? [title] : [];
+      })
+    ),
+  ];
+
+  if (titles.length > 0) {
+    return titles.join(', ');
+  }
+
+  return draft.role === draft.source.role.toUpperCase() ? draft.source.roleTitle : '';
 };
 
 export const hasBlockingIssue = (draft: DraftRow) =>

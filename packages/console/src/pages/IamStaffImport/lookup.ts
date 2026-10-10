@@ -29,6 +29,13 @@ const fetchAll = async <T>(api: KyInstance, path: string): Promise<T[]> => {
 
 const externalIdsGuard = z.object({ externalIds: z.object({ mkn: z.string() }) });
 
+const roleTitlesGuard = z.object({ roleTitles: z.record(z.string()) });
+
+const toImportOrganization = ({ id, name, customData }: Organization): ImportOrganization => {
+  const parsed = roleTitlesGuard.safeParse(customData);
+  return parsed.success ? { id, name, roleTitles: parsed.data.roleTitles } : { id, name };
+};
+
 const mknIdOf = (customData: unknown): string | undefined => {
   const parsed = externalIdsGuard.safeParse(customData);
   return parsed.success ? parsed.data.externalIds.mkn : undefined;
@@ -46,7 +53,7 @@ export const loadImportData = async (
 
   const unitEntries = organizations.flatMap((organization): Array<[string, ImportOrganization]> => {
     const key = unitKeyOf(organization.customData);
-    return key ? [[key, { id: organization.id, name: organization.name }]] : [];
+    return key ? [[key, toImportOrganization(organization)]] : [];
   });
   const unitCount = unitEntries.reduce(
     (count, [key]) => new Map(count).set(key, (count.get(key) ?? 0) + 1),
@@ -77,7 +84,7 @@ export const loadImportData = async (
   return {
     lookup,
     organizations: organizations
-      .map(({ id, name }) => ({ id, name }))
+      .map((organization) => toImportOrganization(organization))
       .slice()
       .sort((left, right) => left.name.localeCompare(right.name, 'vi')),
   };
