@@ -47,7 +47,7 @@ const description = {
   enter_password_for: 'Faça login com a senha do {{method}} {{value}}',
   enter_username: 'Definir nome de usuário',
   enter_username_description:
-    'O nome de usuário é uma alternativa para o login. O nome de usuário deve conter apenas letras, números e sublinhados.',
+    'O nome de usuário é uma alternativa para o login. O nome de usuário deve conter apenas letras, números e sublinhados e hífens.',
   enter_username_policy_description:
     'O nome de usuário é uma alternativa para o login. {{requirements}}',
   link_email: 'Vincular email',

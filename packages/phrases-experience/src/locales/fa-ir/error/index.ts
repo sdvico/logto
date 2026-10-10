@@ -9,7 +9,7 @@ const error = {
   password_required: 'رمز عبور الزامی است',
   username_exists: 'نام کاربری از قبل وجود دارد',
   username_should_not_start_with_number: 'نام کاربری نباید با عدد شروع شود',
-  username_invalid_charset: 'نام کاربری فقط باید شامل حروف، اعداد یا زیرخط باشد.',
+  username_invalid_charset: 'نام کاربری فقط باید شامل حروف، اعداد یا زیرخط و خط تیره باشد.',
   username_too_short: 'نام کاربری باید حداقل {{min}} کاراکتر داشته باشد.',
   username_too_long: 'نام کاربری باید حداکثر {{max}} کاراکتر داشته باشد.',
   username_uppercase_not_allowed: 'حروف بزرگ در نام کاربری مجاز نیست.',

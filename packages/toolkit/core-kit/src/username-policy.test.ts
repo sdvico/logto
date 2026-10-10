@@ -76,9 +76,18 @@ describe('validateUsernameHardFloor', () => {
   });
   it('returns "invalid_charset_hard" for an unsupported character', () => {
     expect(validateUsernameHardFloor('ab c')).toBe('invalid_charset_hard');
+    expect(validateUsernameHardFloor('nguyen.van')).toBe('invalid_charset_hard');
   });
   it('returns undefined for a valid username', () => {
     expect(validateUsernameHardFloor('abc')).toBeUndefined();
+  });
+  // Sdvico: usernames migrated from MKN contain hyphens.
+  it('accepts hyphens after the first character', () => {
+    expect(validateUsernameHardFloor('chinnd-THO')).toBeUndefined();
+    expect(validateUsernameHardFloor('nguyen_van-a')).toBeUndefined();
+  });
+  it('rejects a leading hyphen', () => {
+    expect(validateUsernameHardFloor('-abc')).toBe('invalid_charset_hard');
   });
 });
 

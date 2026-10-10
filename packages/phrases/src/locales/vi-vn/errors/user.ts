@@ -1,7 +1,7 @@
 const user = {
   username_already_in_use: 'Tên đăng nhập này đã được sử dụng.',
   username_starts_with_number: 'Tên đăng nhập không được bắt đầu bằng số.',
-  username_invalid_charset_hard: 'Tên đăng nhập chỉ được chứa chữ, số và gạch dưới.',
+  username_invalid_charset_hard: 'Tên đăng nhập chỉ được chứa chữ, số, gạch dưới và gạch ngang.',
   username_too_short: 'Tên đăng nhập quá ngắn.',
   username_too_long: 'Tên đăng nhập quá dài.',
   username_uppercase_not_allowed: 'Tên đăng nhập không được chứa chữ hoa.',
@@ -37,7 +37,8 @@ const user = {
   user_not_exist: 'Người dùng với {{ identifier }} không tồn tại.',
   missing_profile: 'Bạn cần cung cấp thêm thông tin trước khi đăng nhập.',
   role_exists: 'Vai trò có id {{roleId}} đã được thêm vào người dùng này',
-  invalid_role_type: 'Loại vai trò không hợp lệ, không thể gán vai trò machine-to-machine cho người dùng.',
+  invalid_role_type:
+    'Loại vai trò không hợp lệ, không thể gán vai trò machine-to-machine cho người dùng.',
   suggest_mfa: 'Để bảo mật tài khoản tốt hơn, chúng tôi khuyên bạn nên gắn MFA cho tài khoản.',
   missing_mfa: 'Bạn cần gắn thêm MFA trước khi đăng nhập.',
   totp_already_in_use: 'TOTP đã được sử dụng.',

@@ -71,7 +71,8 @@ const account_center = {
   },
   username: {
     title: 'Establecer nombre de usuario',
-    description: 'El nombre de usuario solo puede contener letras, números y guiones bajos.',
+    description:
+      'El nombre de usuario solo puede contener letras, números y guiones bajos y guiones.',
     policy_description: '{{requirements}}',
     success: 'Nombre de usuario actualizado correctamente.',
   },

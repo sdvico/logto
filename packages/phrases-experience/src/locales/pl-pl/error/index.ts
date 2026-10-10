@@ -10,7 +10,7 @@ const error = {
   username_exists: 'Nazwa użytkownika już istnieje',
   username_should_not_start_with_number: 'Nazwa użytkownika nie powinna zaczynać się od liczby',
   username_invalid_charset:
-    'Nazwa użytkownika powinna zawierać tylko litery, liczby lub podkreślenia.',
+    'Nazwa użytkownika powinna zawierać tylko litery, liczby lub podkreślenia i myślniki.',
   username_too_short: 'Nazwa użytkownika musi mieć co najmniej {{min}} znaków.',
   username_too_long: 'Nazwa użytkownika może mieć maksymalnie {{max}} znaków.',
   username_uppercase_not_allowed: 'Duże litery nie są dozwolone w nazwach użytkowników.',

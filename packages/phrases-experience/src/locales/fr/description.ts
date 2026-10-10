@@ -48,7 +48,7 @@ const description = {
   enter_password_for: 'Connectez-vous avec le mot de passe pour {{method}} {{value}}',
   enter_username: "Définir un nom d'utilisateur",
   enter_username_description:
-    "Le nom d'utilisateur est une alternative pour la connexion. Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et des underscores.",
+    "Le nom d'utilisateur est une alternative pour la connexion. Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et des underscores et traits d’union.",
   enter_username_policy_description:
     "Le nom d'utilisateur est une alternative pour la connexion. {{requirements}}",
   link_email: "Lier l'adresse e-mail",

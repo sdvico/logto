@@ -1,7 +1,7 @@
 const user = {
   username_already_in_use: 'این نام کاربری از قبل در حال استفاده است.',
   username_starts_with_number: 'نام کاربری نمی‌تواند با عدد شروع شود.',
-  username_invalid_charset_hard: 'نام کاربری فقط می‌تواند شامل حروف، اعداد و زیرخط باشد.',
+  username_invalid_charset_hard: 'نام کاربری فقط می‌تواند شامل حروف، اعداد و زیرخط و خط تیره باشد.',
   username_too_short: 'نام کاربری خیلی کوتاه است.',
   username_too_long: 'نام کاربری خیلی بلند است.',
   username_uppercase_not_allowed: 'نام کاربری نمی‌تواند شامل حروف بزرگ باشد.',

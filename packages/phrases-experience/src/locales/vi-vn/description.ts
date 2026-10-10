@@ -48,8 +48,9 @@ const description = {
   enter_password_for: 'Đăng nhập bằng mật khẩu với {{method}} {{value}}',
   enter_username: 'Đặt tên đăng nhập',
   enter_username_description:
-    'Tên đăng nhập là một cách khác để đăng nhập. Tên đăng nhập chỉ được chứa chữ cái, số và gạch dưới.',
-  enter_username_policy_description: 'Tên đăng nhập là một cách khác để đăng nhập. {{requirements}}',
+    'Tên đăng nhập là một cách khác để đăng nhập. Tên đăng nhập chỉ được chứa chữ cái, số, gạch dưới và gạch ngang.',
+  enter_username_policy_description:
+    'Tên đăng nhập là một cách khác để đăng nhập. {{requirements}}',
   link_email: 'Liên kết email',
   link_phone: 'Liên kết số điện thoại',
   link_email_or_phone: 'Liên kết email hoặc số điện thoại',
@@ -57,7 +58,8 @@ const description = {
   link_phone_description: 'Để tăng cường bảo mật, vui lòng liên kết số điện thoại với tài khoản.',
   link_email_or_phone_description:
     'Để tăng cường bảo mật, vui lòng liên kết email hoặc số điện thoại với tài khoản.',
-  continue_with_more_information: 'Để tăng cường bảo mật, vui lòng hoàn tất thông tin tài khoản dưới đây.',
+  continue_with_more_information:
+    'Để tăng cường bảo mật, vui lòng hoàn tất thông tin tài khoản dưới đây.',
   create_your_account: 'Tạo tài khoản của bạn',
   sign_in_to_your_account: 'Đăng nhập vào tài khoản của bạn',
   device_activation: 'Kích hoạt thiết bị',

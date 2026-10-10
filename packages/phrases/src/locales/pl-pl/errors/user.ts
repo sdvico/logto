@@ -2,7 +2,7 @@ const user = {
   username_already_in_use: 'Nazwa użytkownika jest już zajęta.',
   username_starts_with_number: 'Nazwa użytkownika nie może zaczynać się od cyfry.',
   username_invalid_charset_hard:
-    'Nazwa użytkownika może zawierać tylko litery, cyfry i podkreślenia.',
+    'Nazwa użytkownika może zawierać tylko litery, cyfry i podkreślenia i myślniki.',
   username_too_short: 'Nazwa użytkownika jest zbyt krótka.',
   username_too_long: 'Nazwa użytkownika jest zbyt długa.',
   username_uppercase_not_allowed: 'Nazwa użytkownika nie może zawierać wielkich liter.',

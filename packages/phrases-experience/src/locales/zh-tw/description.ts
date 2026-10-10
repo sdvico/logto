@@ -41,7 +41,8 @@ const description = {
   enter_password: '輸入密碼',
   enter_password_for: '輸入{{method}} {{value}}對應的密碼進行登錄',
   enter_username: '設置用戶名',
-  enter_username_description: '用戶名可以用來進行登錄。用戶名僅可以包含字母、數字和下劃線。',
+  enter_username_description:
+    '用戶名可以用來進行登錄。用戶名僅可以包含字母、數字和下劃線和連字符。',
   enter_username_policy_description: '用戶名可以用來進行登錄。{{requirements}}',
   link_email: '綁定郵箱',
   link_phone: '綁定手機',

@@ -11,7 +11,7 @@ const error = {
   username_exists: 'ユーザー名が既に存在しています',
   username_should_not_start_with_number: 'ユーザー名は数字で始めることはできません',
   username_invalid_charset:
-    'ユーザー名は文字、数字、またはアンダースコアのみを含める必要があります。',
+    'ユーザー名は文字、数字、またはアンダースコアとハイフンのみを含める必要があります。',
   username_too_short: 'ユーザー名は少なくとも {{min}} 文字である必要があります。',
   username_too_long: 'ユーザー名は最大で {{max}} 文字である必要があります。',
   username_uppercase_not_allowed: 'ユーザー名に大文字は使用できません。',

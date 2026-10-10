@@ -9,7 +9,8 @@ const error = {
   password_required: 'كلمة المرور مطلوبة',
   username_exists: 'اسم المستخدم موجود بالفعل',
   username_should_not_start_with_number: 'يجب ألا يبدأ اسم المستخدم برقم',
-  username_invalid_charset: 'يجب أن يحتوي اسم المستخدم فقط على الحروف والأرقام والشرطات السفلية.',
+  username_invalid_charset:
+    'يجب أن يحتوي اسم المستخدم فقط على الحروف والأرقام والشرطات السفلية والواصلات.',
   username_too_short: 'يجب أن يكون اسم المستخدم على الأقل {{min}} حرفًا.',
   username_too_long: 'يجب أن يكون اسم المستخدم بحد أقصى {{max}} حرفًا.',
   username_uppercase_not_allowed: 'لا يُسمح بالأحرف الكبيرة في أسماء المستخدمين.',

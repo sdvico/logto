@@ -12,7 +12,7 @@ const error = {
   username_should_not_start_with_number:
     "Le nom d'utilisateur ne doit pas commencer par un chiffre",
   username_invalid_charset:
-    "Le nom d'utilisateur ne doit contenir que des lettres, des chiffres ou des caractères de soulignement.",
+    "Le nom d'utilisateur ne doit contenir que des lettres, des chiffres ou des caractères de soulignement et des traits d’union.",
   username_too_short: "Le nom d'utilisateur doit comporter au moins {{min}} caractères.",
   username_too_long: "Le nom d'utilisateur doit comporter au plus {{max}} caractères.",
   username_uppercase_not_allowed:

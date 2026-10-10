@@ -10,7 +10,7 @@ const error = {
   password_required: 'Şifre gerekli.',
   username_exists: 'Kullanıcı adı mevcut.',
   username_should_not_start_with_number: 'Kullanıcı adı sayı ile başlayamaz.',
-  username_invalid_charset: 'Kullanıcı adı yalnızca harf,sayı veya alt çizgi içermeli.',
+  username_invalid_charset: 'Kullanıcı adı yalnızca harf,sayı veya alt çizgi ve tire içermeli.',
   username_too_short: 'Kullanıcı adı en az {{min}} karakter uzunluğunda olmalıdır.',
   username_too_long: 'Kullanıcı adı en fazla {{max}} karakter uzunluğunda olmalıdır.',
   username_uppercase_not_allowed: 'Kullanıcı adlarında büyük harflere izin verilmiyor.',

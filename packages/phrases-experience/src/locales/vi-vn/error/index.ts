@@ -10,7 +10,7 @@ const error = {
   password_required: 'Mật khẩu là bắt buộc',
   username_exists: 'Tên đăng nhập đã tồn tại',
   username_should_not_start_with_number: 'Tên đăng nhập không được bắt đầu bằng số',
-  username_invalid_charset: 'Tên đăng nhập chỉ được chứa chữ cái, số hoặc gạch dưới.',
+  username_invalid_charset: 'Tên đăng nhập chỉ được chứa chữ cái, số, gạch dưới hoặc gạch ngang.',
   username_too_short: 'Tên đăng nhập phải có ít nhất {{min}} ký tự.',
   username_too_long: 'Tên đăng nhập tối đa {{max}} ký tự.',
   username_uppercase_not_allowed: 'Không được dùng chữ hoa trong tên đăng nhập.',

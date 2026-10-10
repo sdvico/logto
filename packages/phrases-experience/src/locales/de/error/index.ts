@@ -10,7 +10,8 @@ const error = {
   password_required: 'Passwort ist erforderlich',
   username_exists: 'Benutzername existiert bereits',
   username_should_not_start_with_number: 'Benutzername darf nicht mit einer Zahl beginnen',
-  username_invalid_charset: 'Benutzername darf nur Buchstaben, Zahlen und Unterstriche enthalten',
+  username_invalid_charset:
+    'Benutzername darf nur Buchstaben, Zahlen und Unterstriche und Bindestriche enthalten',
   username_too_short: 'Der Benutzername muss mindestens {{min}} Zeichen lang sein.',
   username_too_long: 'Der Benutzername darf höchstens {{max}} Zeichen lang sein.',
   username_uppercase_not_allowed: 'Großbuchstaben sind in Benutzernamen nicht erlaubt.',

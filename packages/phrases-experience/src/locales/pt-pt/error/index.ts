@@ -11,7 +11,7 @@ const error = {
   username_exists: 'O nome de utilizador já existe',
   username_should_not_start_with_number: 'O nome de utilizador não deve começar com um número',
   username_invalid_charset:
-    'O nome de utilizador deve conter apenas letras, números ou underscores.',
+    'O nome de utilizador deve conter apenas letras, números, underscores ou hífens.',
   username_too_short: 'O nome de utilizador deve ter pelo menos {{min}} caracteres.',
   username_too_long: 'O nome de utilizador deve ter, no máximo, {{max}} caracteres.',
   username_uppercase_not_allowed: 'Letras maiúsculas não são permitidas nos nomes de utilizador.',

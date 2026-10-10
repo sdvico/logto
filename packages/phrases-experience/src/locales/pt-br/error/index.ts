@@ -10,7 +10,8 @@ const error = {
   password_required: 'Senha é obrigatório',
   username_exists: 'O nome de usuário já existe',
   username_should_not_start_with_number: 'O nome de usuário não deve começar com um número',
-  username_invalid_charset: 'O nome de usuário deve conter apenas letras, números ou sublinhados.',
+  username_invalid_charset:
+    'O nome de usuário deve conter apenas letras, números ou sublinhados e hífens.',
   username_too_short: 'O nome de usuário deve ter pelo menos {{min}} caracteres.',
   username_too_long: 'O nome de usuário deve ter no máximo {{max}} caracteres.',
   username_uppercase_not_allowed: 'Letras maiúsculas não são permitidas em nomes de usuário.',

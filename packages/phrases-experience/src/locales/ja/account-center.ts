@@ -66,7 +66,7 @@ const account_center = {
   },
   username: {
     title: 'ユーザー名を設定',
-    description: 'ユーザー名は英数字とアンダースコアのみ使用できます。',
+    description: 'ユーザー名は英数字とアンダースコアとハイフンのみ使用できます。',
     policy_description: '{{requirements}}',
     success: 'ユーザー名を更新しました。',
   },

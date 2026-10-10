@@ -1,7 +1,7 @@
 const user = {
   username_already_in_use: '該使用者名稱已被使用。',
   username_starts_with_number: '使用者名稱不能以數字開頭。',
-  username_invalid_charset_hard: '使用者名稱只能包含字母、數字和下劃線。',
+  username_invalid_charset_hard: '使用者名稱只能包含字母、數字和下劃線和連字符。',
   username_too_short: '使用者名稱太短。',
   username_too_long: '使用者名稱太長。',
   username_uppercase_not_allowed: '使用者名稱不能包含大寫字母。',

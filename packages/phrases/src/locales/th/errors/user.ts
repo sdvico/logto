@@ -1,7 +1,8 @@
 const user = {
   username_already_in_use: 'ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว',
   username_starts_with_number: 'ชื่อผู้ใช้ต้องไม่เริ่มต้นด้วยตัวเลข',
-  username_invalid_charset_hard: 'ชื่อผู้ใช้สามารถประกอบด้วยตัวอักษร ตัวเลข และขีดล่างเท่านั้น',
+  username_invalid_charset_hard:
+    'ชื่อผู้ใช้สามารถประกอบด้วยตัวอักษร ตัวเลข และขีดล่างและขีดกลางเท่านั้น',
   username_too_short: 'ชื่อผู้ใช้สั้นเกินไป',
   username_too_long: 'ชื่อผู้ใช้ยาวเกินไป',
   username_uppercase_not_allowed: 'ชื่อผู้ใช้ต้องไม่มีตัวอักษรตัวใหญ่',

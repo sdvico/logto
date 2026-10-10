@@ -48,7 +48,7 @@ const description = {
   enter_password_for: '{{method}} {{value}}でパスワードでサインインする',
   enter_username: 'ユーザー名を入力する',
   enter_username_description:
-    'ユーザー名はサインインの代替手段です。ユーザー名には、文字、数字、アンダースコアのみを含める必要があります。',
+    'ユーザー名はサインインの代替手段です。ユーザー名には、文字、数字、アンダースコアとハイフンのみを含める必要があります。',
   enter_username_policy_description: 'ユーザー名はサインインの代替手段です。{{requirements}}',
   link_email: 'メールアドレスをリンクする',
   link_phone: '電話番号をリンクする',

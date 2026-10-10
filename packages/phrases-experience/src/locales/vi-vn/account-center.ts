@@ -1,4 +1,3 @@
-/* eslint-disable max-lines -- Locale catalog mirrors the complete Account Center phrase schema. */
 const account_center = {
   home: {
     title: 'Không tìm thấy trang',
@@ -7,7 +6,8 @@ const account_center = {
   page: {
     title: 'Tài khoản',
     security_title: 'Bảo mật',
-    security_description: 'Thay đổi cài đặt tài khoản tại đây để đảm bảo an toàn cho tài khoản của bạn.',
+    security_description:
+      'Thay đổi cài đặt tài khoản tại đây để đảm bảo an toàn cho tài khoản của bạn.',
     profile_title: 'Thông tin cá nhân',
     profile_description: 'Thay đổi thông tin cá nhân của bạn tại đây.',
     sidebar_personal_info: 'Thông tin cá nhân',
@@ -53,8 +53,7 @@ const account_center = {
     title: 'Liên kết email',
     description: 'Liên kết email để đăng nhập hoặc hỗ trợ khôi phục tài khoản.',
     verification_title: 'Nhập mã xác minh gửi tới email',
-    verification_description:
-      'Mã xác minh đã được gửi đến email {{email_address}} của bạn.',
+    verification_description: 'Mã xác minh đã được gửi đến email {{email_address}} của bạn.',
     success: 'Đã liên kết email chính thành công.',
     verification_required: 'Xác minh đã hết hạn. Vui lòng xác minh lại danh tính của bạn.',
   },
@@ -68,7 +67,7 @@ const account_center = {
   },
   username: {
     title: 'Đặt tên đăng nhập',
-    description: 'Tên đăng nhập chỉ được chứa chữ cái, số và gạch dưới.',
+    description: 'Tên đăng nhập chỉ được chứa chữ cái, số, gạch dưới và gạch ngang.',
     policy_description: '{{requirements}}',
     success: 'Đã cập nhật tên đăng nhập thành công.',
   },
@@ -166,8 +165,7 @@ const account_center = {
       'Xác minh danh tính để bảo vệ an toàn tài khoản của bạn. Gửi mã xác minh đến email của bạn.',
     email_label: 'Địa chỉ email',
     send: 'Gửi mã xác minh',
-    description:
-      'Mã xác minh đã được gửi đến email {{email}} của bạn. Nhập mã để tiếp tục.',
+    description: 'Mã xác minh đã được gửi đến email {{email}} của bạn. Nhập mã để tiếp tục.',
     resend: 'Chưa nhận được mã? <a>Gửi lại mã xác minh</a>',
     not_received: 'Chưa nhận được mã?',
     resend_action: 'Gửi lại mã xác minh',
@@ -191,8 +189,7 @@ const account_center = {
     error_invalid_code: 'Mã xác minh không hợp lệ hoặc đã hết hạn.',
   },
   mfa: {
-    totp_already_added:
-      'Bạn đã thêm ứng dụng xác thực rồi. Vui lòng xóa ứng dụng hiện có trước.',
+    totp_already_added: 'Bạn đã thêm ứng dụng xác thực rồi. Vui lòng xóa ứng dụng hiện có trước.',
     totp_not_enabled:
       'OTP qua ứng dụng xác thực chưa được bật. Vui lòng liên hệ quản trị viên để được hỗ trợ.',
     backup_code_already_added:
@@ -200,8 +197,7 @@ const account_center = {
     backup_code_not_enabled:
       'Mã dự phòng chưa được bật. Vui lòng liên hệ quản trị viên để được hỗ trợ.',
     backup_code_requires_other_mfa: 'Mã dự phòng yêu cầu thiết lập một phương thức MFA khác trước.',
-    passkey_not_enabled:
-      'Passkey chưa được bật. Vui lòng liên hệ quản trị viên để được hỗ trợ.',
+    passkey_not_enabled: 'Passkey chưa được bật. Vui lòng liên hệ quản trị viên để được hỗ trợ.',
     passkey_already_registered:
       'Passkey này đã được đăng ký cho tài khoản của bạn. Vui lòng sử dụng một thiết bị xác thực khác.',
   },
@@ -279,7 +275,8 @@ const account_center = {
   },
   sessions: {
     page_title: 'Phiên đăng nhập',
-    page_description: 'Quản lý các phiên đăng nhập đang hoạt động và các ứng dụng bên thứ ba đã được cấp quyền.',
+    page_description:
+      'Quản lý các phiên đăng nhập đang hoạt động và các ứng dụng bên thứ ba đã được cấp quyền.',
     title: 'Phiên đăng nhập',
     current_session: 'Phiên hiện tại',
     signed_in_at: 'Đăng nhập lúc {{date}}',
@@ -304,4 +301,3 @@ const account_center = {
 };
 
 export default Object.freeze(account_center);
-/* eslint-enable max-lines */

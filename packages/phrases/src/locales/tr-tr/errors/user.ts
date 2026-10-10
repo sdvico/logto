@@ -1,7 +1,8 @@
 const user = {
   username_already_in_use: 'Bu kullanıcı adı zaten kullanımda.',
   username_starts_with_number: 'Kullanıcı adı bir sayı ile başlayamaz.',
-  username_invalid_charset_hard: 'Kullanıcı adı yalnızca harfler, sayılar ve alt çizgi içerebilir.',
+  username_invalid_charset_hard:
+    'Kullanıcı adı yalnızca harfler, sayılar ve alt çizgi ve tire içerebilir.',
   username_too_short: 'Kullanıcı adı çok kısa.',
   username_too_long: 'Kullanıcı adı çok uzun.',
   username_uppercase_not_allowed: 'Kullanıcı adı büyük harf içeremez.',

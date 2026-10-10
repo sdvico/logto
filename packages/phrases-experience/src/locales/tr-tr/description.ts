@@ -46,7 +46,7 @@ const description = {
   enter_password_for: '{{method}} {{value}} şifresiyle oturum açın',
   enter_username: 'Kullanıcı adını ayarla',
   enter_username_description:
-    'Kullanıcı adı, oturum açmak için bir alternatiftir. Kullanıcı adı yalnızca harf, sayı ve alt çizgi içermelidir.',
+    'Kullanıcı adı, oturum açmak için bir alternatiftir. Kullanıcı adı yalnızca harf, sayı ve alt çizgi ve tire içermelidir.',
   enter_username_policy_description:
     'Kullanıcı adı, oturum açmak için bir alternatiftir. {{requirements}}',
   link_email: 'E-postayı bağla',

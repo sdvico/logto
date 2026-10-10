@@ -68,7 +68,7 @@ const account_center = {
   },
   username: {
     title: 'Ustaw nazwę użytkownika',
-    description: 'Nazwa użytkownika może zawierać tylko litery, cyfry i podkreślenia.',
+    description: 'Nazwa użytkownika może zawierać tylko litery, cyfry i podkreślenia i myślniki.',
     policy_description: '{{requirements}}',
     success: 'Nazwa użytkownika została pomyślnie zaktualizowana.',
   },
