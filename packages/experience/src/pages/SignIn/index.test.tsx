@@ -28,6 +28,19 @@ describe('<SignIn />', () => {
       </SettingsProvider>
     );
 
+  describe('agency header', () => {
+    test.each([
+      ['a branding logo', { logoUrl: 'https://sdvico.local/logo.svg' }],
+      ['no branding logo', {}],
+    ])('shows the bundled agency emblem with %s', (_, branding) => {
+      const { container } = renderSignIn({ branding });
+      const emblem = container.querySelector('header img.emblem');
+
+      expect(emblem).not.toBeNull();
+      expect(emblem?.getAttribute('src')).not.toBe('https://sdvico.local/logo.svg');
+    });
+  });
+
   describe('renders with password only SignIn method settings', () => {
     test.each([
       [SignInIdentifier.Username],

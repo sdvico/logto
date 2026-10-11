@@ -1,4 +1,16 @@
+@use '@/shared/scss/colors' as colors;
 @use '@/shared/scss/underscore' as _;
+
+// SDVICO: màu riêng của trang đăng nhập Sat-Alert IAM (bản mẫu "Sat-Alert IAM sign-in redesign").
+$ground: #0f2a3f;
+$accent: #5eead4;
+$primary: #0b5fa5;
+$primary-hover: #0a6bbc;
+$primary-pressed: #084a80;
+$ink: #0f172a;
+$muted: #475569;
+$line: #e2e8f0;
+$mobile: 860px;
 
 .page {
   position: fixed;
@@ -7,20 +19,24 @@
   overflow: auto;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(to bottom right, #1c2b45 0%, #0f2f43 50%, #123a52 100%);
-  color: #ffffff;
+  background: $ground;
+  color: #fff;
 }
 
 .topbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 8%);
+}
+
+.topbarInner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: _.unit(5) _.unit(6);
   flex-wrap: wrap;
   gap: _.unit(3);
-  max-width: 1040px;
-  width: 100%;
+  max-width: 1120px;
   margin: 0 auto;
+  padding: _.unit(5) _.unit(8);
+  box-sizing: border-box;
 }
 
 .orgBlock {
@@ -30,179 +46,276 @@
 }
 
 .emblem {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
 }
 
 .orgText {
-  font-size: 12px;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.75);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 72%);
 }
 
 .orgTextStrong {
+  font-size: 15px;
   font-weight: 600;
-  color: #ffffff;
+  color: #fff;
 }
 
 .systemTag {
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  padding: 6px 12px;
+  border: 1px solid rgba(94, 234, 212, 35%);
+  border-radius: 999px;
+  font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #5eead4;
+  color: $accent;
 }
 
 .content {
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: _.unit(16);
-  padding: _.unit(8) _.unit(6);
-  width: 100%;
-  margin: 0 auto;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: _.unit(14);
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: _.unit(14) _.unit(8);
+  box-sizing: border-box;
 }
 
 .hero {
-  flex: 0 1 460px;
-  min-width: 300px;
+  flex: 1 1 440px;
+  min-width: 0;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(5);
 }
 
 .markRow {
   display: flex;
   align-items: center;
   gap: _.unit(3);
-  margin-bottom: _.unit(4);
 }
 
 .mark {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.markText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .markLabel {
   font-size: 18px;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 600;
+}
+
+// Dòng mô tả ngắn chỉ hiện trên di động, thay cho tiêu đề lớn.
+.tagline {
+  display: none;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 78%);
 }
 
 .heading {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1.25;
-  margin: 0 0 _.unit(4);
+  margin: 0;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 1.2;
+  text-wrap: balance;
 }
 
 .highlight {
-  color: #5eead4;
+  color: $accent;
 }
 
 .description {
-  font-size: 14px;
+  margin: 0;
+  max-width: 480px;
+  font-size: 16px;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.72);
-  margin: 0 0 _.unit(6);
-  max-width: 440px;
+  color: rgba(255, 255, 255, 78%);
 }
 
-.badges {
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: _.unit(2);
+  margin: _.unit(2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
   display: flex;
   align-items: center;
   gap: _.unit(2);
-  flex-wrap: wrap;
-}
-
-.badge {
+  padding: _.unit(2) 14px _.unit(2) _.unit(2);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  padding: _.unit(1) _.unit(3);
-  font-size: 12px;
-  font-weight: 500;
-  color: #eef4fa;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 8%);
+  font-size: 14px;
 }
 
-.arrow {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.card {
-  flex: 0 0 448px;
-  width: 448px;
-  max-width: 100%;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: _.unit(8);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 50, 0.4);
-  color: var(--color-type-primary, #1f2937);
-}
-
-.cardIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: #eef4fa;
-  color: #164865;
+.stepNumber {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: $accent;
+  color: $ground;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.card {
+  // Khung luôn nền trắng: dùng bộ màu sáng cho form của Logto, kể cả khi trang ở chế độ tối
+  // (không thì chữ gõ trong ô nhập cũng màu trắng).
+  @include colors.light;
+  // Nút và viền ô nhập của Logto đọc các biến này; giữ màu của bản mẫu dù cài đặt Thương hiệu là gì.
+  --color-brand-default: #{$primary};
+  --color-brand-hover: #{$primary-hover};
+  --color-brand-pressed: #{$primary-pressed};
+  --color-brand-loading: #{$primary-hover};
+  flex: 0 1 420px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: _.unit(8);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 45%);
+  color: $ink;
+}
+
+.cardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   margin-bottom: _.unit(3);
+  border-radius: 10px;
+  background: #e8f1fa;
+  color: $primary;
 }
 
 .cardTitle {
-  font-size: 18px;
-  font-weight: 700;
   margin: 0 0 _.unit(1);
-  color: #111827;
+  font-size: 22px;
+  font-weight: bold;
+  line-height: 1.3;
+  color: $ink;
 }
 
 .cardSubtitle {
-  font-size: 13px;
-  color: #6b7280;
   margin: 0 0 _.unit(5);
+  font-size: 14px;
+  line-height: 1.5;
+  color: $muted;
 }
 
 .cardFooter {
-  margin: _.unit(6) 0 0;
+  margin: _.unit(5) 0 0;
   padding-top: _.unit(4);
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid $line;
+  font-size: 13px;
+  line-height: 1.5;
   text-align: center;
-  font-size: 12px;
-  color: #94a3b8;
+  color: $muted;
 }
 
 .footer {
+  padding: _.unit(5) _.unit(8);
+  font-size: 13px;
   text-align: center;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.55);
-  padding: _.unit(5) _.unit(4);
+  color: rgba(255, 255, 255, 60%);
 }
 
-@media only screen and (max-width: 860px) {
+// Di động: khung đăng nhập nằm ngay màn hình đầu; phần giới thiệu thu lại một dòng.
+@media only screen and (max-width: $mobile) {
+  // Cùng trục với khung đăng nhập (480px + lề 2 bên) khi màn rộng hơn điện thoại.
+  .topbarInner {
+    max-width: 520px;
+    padding: _.unit(4) _.unit(5);
+  }
+
+  .emblem {
+    width: 32px;
+    height: 32px;
+  }
+
+  .orgText {
+    font-size: 12px;
+  }
+
+  .orgTextStrong {
+    font-size: 14px;
+  }
+
+  .systemTag,
+  .heading,
+  .description,
+  .steps,
+  .cardIcon {
+    display: none;
+  }
+
+  // Căn giữa theo chiều dọc giữa header và footer; màn thấp thì nội dung tự dài ra và trang cuộn.
   .content {
     flex-direction: column;
-    gap: _.unit(8);
-    padding: _.unit(6) _.unit(5);
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 0 _.unit(4) _.unit(4);
+  }
+
+  .hero,
+  .card {
+    flex: none;
+    width: 100%;
+    max-width: 480px;
   }
 
   .hero {
-    text-align: center;
+    padding: _.unit(5) _.unit(1);
   }
 
-  .description {
-    margin-left: auto;
-    margin-right: auto;
+  .mark {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
   }
 
-  .badges {
-    justify-content: center;
+  .markLabel {
+    font-size: 17px;
+    font-weight: bold;
+  }
+
+  .tagline {
+    display: block;
   }
 
   .card {
-    width: 100%;
+    padding: _.unit(6) _.unit(5);
+  }
+
+  .footer {
+    padding: _.unit(4) _.unit(5) _.unit(6);
+    font-size: 12px;
   }
 }

@@ -1,9 +1,7 @@
-import { useContext } from 'react';
 import { Helmet } from 'react-helmet';
 
-import PageContext from '@/Providers/PageContextProvider/PageContext';
+import agencyLogo from '@/assets/images/agency-logo.png';
 import satAlertIamMark from '@/assets/images/sat-alert-iam-mark.svg';
-import { getBrandingLogoUrl } from '@/shared/utils/logo';
 
 import styles from './index.module.scss';
 
@@ -16,7 +14,7 @@ type BusinessApp = {
 };
 
 /**
- * sdvico: link that cua tung ung dung nghiep vu (domain rieng, ngoai repo nay). Cac app nay chua
+ * Sdvico: link that cua tung ung dung nghiep vu (domain rieng, ngoai repo nay). Cac app nay chua
  * tich hop OIDC voi Sat-Alert IAM — khi da tich hop, app se tu redirect qua /oidc/auth cua IAM
  * (dung Logto SDK) thay vi nguoi dung bam thang vao domain nhu hien tai.
  */
@@ -42,26 +40,18 @@ const BUSINESS_APPS: readonly BusinessApp[] = [
 ];
 
 /**
- * sdvico: trang thay the man hinh loi "unknown-session" mac dinh cua Logto — thay vi bao loi,
+ * Sdvico: trang thay the man hinh loi "unknown-session" mac dinh cua Logto — thay vi bao loi,
  * hien thi danh sach cac ung dung nghiep vu de nguoi dung chon, bam vao la di qua dung luong SSO
  * (OIDC authorize) cua tung app.
  */
 const AppPortal = () => {
-  const { experienceSettings, theme } = useContext(PageContext);
-  const orgLogo = experienceSettings
-    ? getBrandingLogoUrl({
-        theme,
-        branding: experienceSettings.branding,
-        isDarkModeEnabled: experienceSettings.color.isDarkModeEnabled ?? false,
-      })
-    : null;
-
   return (
     <div className={styles.page}>
       <Helmet title="Sat-Alert IAM" />
       <header className={styles.topbar}>
         <div className={styles.orgBlock}>
-          {orgLogo && <img className={styles.emblem} src={orgLogo} alt="" />}
+          {/* Logo Cục đi cùng tên Cục viết cứng bên cạnh, không lấy từ cài đặt Thương hiệu. */}
+          <img className={styles.emblem} src={agencyLogo} alt="" />
           <div className={styles.orgText}>
             <div>Bộ Nông nghiệp và Môi trường</div>
             <div className={styles.orgTextStrong}>Cục Thủy sản và Kiểm ngư</div>
