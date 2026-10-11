@@ -88,17 +88,16 @@ DB_URL="postgres://postgres:123123@localhost:5432/sdvico_logto" node .
 
 **Lưu ý:** đây là `node .` thường (không `NODE_ENV=production`) — ở chế độ này, các app frontend (Console/Experience/demo-app...) được **proxy sang vite dev server**, KHÔNG serve file tĩnh. Xem mục 4 để chạy Console.
 
-### 3.5. Chạy dữ liệu mẫu + khai báo app tích hợp
+### 3.5. Tạo vai trò và cây tổ chức
 
 ```bash
-"/c/Program Files/PostgreSQL/18/bin/psql.exe" -U postgres -h localhost -d sdvico_logto -f "docs/sql/seed-nkkt-users.sql"
-"/c/Program Files/PostgreSQL/18/bin/psql.exe" -U postgres -h localhost -d sdvico_logto -f "docs/sql/declare-apps.sql"
-"/c/Program Files/PostgreSQL/18/bin/psql.exe" -U postgres -h localhost -d sdvico_logto -f "docs/sql/fix-org-hierarchy.sql"
-"/c/Program Files/PostgreSQL/18/bin/psql.exe" -U postgres -h localhost -d sdvico_logto -f "docs/sql/fix-org-hierarchy-v2.sql"
-"/c/Program Files/PostgreSQL/18/bin/psql.exe" -U postgres -h localhost -d sdvico_logto -f "docs/sql/fix-remove-cang-orgs.sql"
+psql -v ON_ERROR_STOP=1 -U postgres -h localhost -d sdvico_logto -f docs/sql/seed-organization-roles.sql
+psql -v ON_ERROR_STOP=1 -U postgres -h localhost -d sdvico_logto -f docs/sql/seed-organizations.sql
 ```
 
-Cả 5 file đều idempotent (chạy lại nhiều lần an toàn). `fix-remove-cang-orgs.sql` sửa lỗi mô hình quan trọng: xoá Organization cấp "Cảng" (đúng đặc tả gốc chỉ 2 cấp Trung ương/Tỉnh — Cảng là Data Scope trên User, không phải Organization), phải chạy SAU 2 file `fix-org-hierarchy*`.
+Cả 2 file đều idempotent (chạy lại an toàn) và phải chạy theo đúng thứ tự trên. `seed-organizations.sql` là nguồn của cây 435 tổ chức (Toàn quốc > Cục > Chi cục Kiểm ngư vùng; Tỉnh > Chi cục, BĐBP > Đồn/trạm, BQL cảng > Cảng), đọc phần đầu file để biết khuôn id. Người dùng nghiệp vụ nhập bằng màn "Nhập người dùng" trong Console; app tích hợp khai báo ở màn "Hệ thống tích hợp".
+
+`docs/sql/declare-apps.sql` tạo vai trò M2M `machine:iam-sync` mà màn "Hệ thống tích hợp" cần, nhưng **chưa sửa** theo `plan-2026-10-10-iam-integration-changes.md` mục 5.2: tệp vẫn tạo tổ chức cũ `org-tw`. Sửa xong mới chạy trên IAM mới.
 
 ## 4. Chạy Console UI (giao diện quản trị)
 
@@ -147,7 +146,8 @@ Có thêm route xem nhanh cho admin đã đăng nhập Console (không cần tok
 | `app-integration-credentials.md` | Thông tin đăng nhập 3 app IUU/MKN/CBVMS (nhạy cảm, xem mục bảo mật) |
 | `iam-sync-integration-guide.md` | Hướng dẫn tích hợp chi tiết cho đội IUU/MKN/CBVMS |
 | `sample-response.json` | Ví dụ response thật của IAM Sync API |
-| `sql/seed-nkkt-users.sql`, `sql/declare-apps.sql`, `sql/fix-org-hierarchy*.sql`, `sql/fix-remove-cang-orgs.sql` | Script tạo/sửa dữ liệu, idempotent, chạy đúng thứ tự trong mục 3.5 |
+| `sql/seed-organization-roles.sql`, `sql/seed-organizations.sql` | Vai trò và cây tổ chức, idempotent, chạy đúng thứ tự trong mục 3.5 |
+| `sql/declare-apps.sql` | Vai trò `machine:iam-sync` và app M2M thử; chưa sửa theo kế hoạch 10/10 mục 5.2 |
 | `diagrams/*.png` | Sơ đồ cây tổ chức + sequence diagram M2M/SSO |
 | `legacy-Tai-lieu-IAM-sdvico.docx` | Bản Word cũ, không còn cập nhật — dùng `TAI-LIEU-IAM-sdvico.md` |
 | `diagrams/*.png` | Sơ đồ cây tổ chức + sequence diagram |
