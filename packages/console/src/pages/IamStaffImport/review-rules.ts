@@ -4,6 +4,7 @@
  */
 import { usernameRegEx } from '@logto/core-kit';
 
+import { phonesIn } from './phone';
 import {
   type DraftRow,
   type ImportLookup,
@@ -214,6 +215,12 @@ export const rules: readonly Rule[] = [
       code: 'PHONE_DROPPED',
       level: 'warning',
       message: `Bỏ số điện thoại "${draft.source.phone}": sai định dạng hoặc đã có người dùng.`,
+    }),
+  ({ draft, phone }) =>
+    when(isCreating(draft) && Boolean(phone) && phonesIn(draft.source.phone).length > 1, {
+      code: 'PHONE_EXTRA',
+      level: 'info',
+      message: `Ô số điện thoại "${draft.source.phone}" có nhiều số, chỉ lưu ${phone ?? ''}.`,
     }),
   ({ draft, lookup }) => {
     const missing = draft.source.units.filter((unit) => isUnitMissing(unit, lookup));

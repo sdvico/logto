@@ -2,7 +2,6 @@ import { toCsv } from './csv';
 import {
   checkRows,
   hasBlockingIssue,
-  normalizePhone,
   parseStaffFile,
   roleTitleOf,
   suggestUsername,
@@ -106,15 +105,11 @@ describe('unitKeyOf', () => {
   });
 });
 
-describe('suggestUsername and normalizePhone', () => {
+describe('suggestUsername', () => {
   it('makes usernames valid for Logto', () => {
     expect(suggestUsername('nguyen.van-a')).toBe('nguyen_van-a');
     expect(suggestUsername('2026cb')).toBe('u_2026cb');
     expect(suggestUsername('-cb')).toBe('u_-cb');
-  });
-
-  it('keeps digits only', () => {
-    expect(normalizePhone('+84 912.345-678')).toBe('84912345678');
   });
 });
 
@@ -164,7 +159,7 @@ describe('checkRows', () => {
 
     expect(draft?.issues).toEqual([]);
     expect(draft?.organizations.map(({ id }) => id)).toEqual(['ccts-qn', 'bp-qn-cr']);
-    expect(draft?.phone).toBe('0912345678');
+    expect(draft?.phone).toBe('84912345678');
     expect(draft?.include).toBe(true);
   });
 
@@ -206,7 +201,7 @@ describe('checkRows', () => {
     expect(hasBlockingIssue(second!)).toBe(true);
   });
 
-  it('drops a used email and an invalid phone with warnings', () => {
+  it('drops a used email and a used phone with warnings', () => {
     const [draft] = reviewOf({
       account_id: 'a1',
       username: 'nguyen_a',
@@ -220,6 +215,33 @@ describe('checkRows', () => {
     expect(codesOf(draft!)).toEqual(['LINK_SUGGESTED', 'EMAIL_DROPPED', 'PHONE_DROPPED']);
     expect(draft?.email).toBeUndefined();
     expect(draft?.phone).toBeUndefined();
+  });
+
+  it('drops a phone that is not a valid number', () => {
+    const [draft] = reviewOf({
+      account_id: 'a1',
+      username: 'nguyen_a',
+      units: 'CHI_CUC:22',
+      password_bcrypt: 'x',
+      phone: '12345',
+    });
+
+    expect(codesOf(draft!)).toContain('PHONE_DROPPED');
+    expect(draft?.phone).toBeUndefined();
+  });
+
+  it('keeps the first of several phones in a cell and tells the reviewer', () => {
+    const [draft] = reviewOf({
+      account_id: 'a1',
+      username: 'nguyen_a',
+      units: 'CHI_CUC:22',
+      password_bcrypt: 'x',
+      phone: '0912345678 hoặc 0987654321',
+    });
+
+    expect(draft?.phone).toBe('84912345678');
+    expect(codesOf(draft!)).toContain('PHONE_EXTRA');
+    expect(hasBlockingIssue(draft!)).toBe(false);
   });
 
   it('flags unknown and ambiguous units, and a row without any unit', () => {

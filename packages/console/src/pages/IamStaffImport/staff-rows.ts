@@ -3,11 +3,12 @@
  * "biết dòng nào sai" của bước Soát. Hàm thuần, không gọi API: trạng thái hiện có của Logto đi vào qua
  * `ImportLookup`.
  */
-import { emailRegEx, phoneRegEx, usernameRegEx } from '@logto/core-kit';
+import { emailRegEx, usernameRegEx } from '@logto/core-kit';
 import { z } from 'zod';
 
 import { parseCsv } from './csv';
 import { countKeys } from './group';
+import { normalizePhone } from './phone';
 import {
   type BatchCount,
   isCreating,
@@ -216,10 +217,6 @@ export const suggestUsername = (username: string) => {
   return /^[A-Z_a-z]/.test(replaced) ? replaced : `u_${replaced}`;
 };
 
-/** Bỏ khoảng trắng, chấm, gạch, ngoặc và dấu `+` đầu; Logto chỉ nhận chữ số. */
-export const normalizePhone = (phone: string) =>
-  phone.replaceAll(/[\s().-]/g, '').replace(/^\+/, '');
-
 /** `error` chặn dòng; `warning` vẫn chạy được nhưng có mất mát; `info` để người duyệt biết. */
 export type Issue = { code: string; level: 'error' | 'warning' | 'info'; message: string };
 
@@ -330,9 +327,7 @@ const usableEmail = (email: string, lookup: ImportLookup, batchCount: BatchCount
 
 const usablePhone = (raw: string, lookup: ImportLookup, batchCount: BatchCount) => {
   const phone = normalizePhone(raw);
-  return phoneRegEx.test(phone) &&
-    !lookup.userIdsByPhone.has(phone) &&
-    (batchCount.phones.get(phone) ?? 0) <= 1
+  return phone && !lookup.userIdsByPhone.has(phone) && (batchCount.phones.get(phone) ?? 0) <= 1
     ? phone
     : undefined;
 };

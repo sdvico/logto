@@ -47,7 +47,7 @@ export const lookup: ImportLookup = {
         externalIds: {},
         isInSync: false,
         email: 'used@example.com',
-        phone: '0900000000',
+        phone: '84900000000',
       },
       {
         id: 'user-linked',
