@@ -70,7 +70,8 @@ const account_center = {
   },
   username: {
     title: 'Definir nome de usuário',
-    description: 'O nome de usuário deve conter apenas letras, números e sublinhados e hífens.',
+    description:
+      'O nome de usuário deve conter apenas letras, números e sublinhados e hífens e pontos.',
     policy_description: '{{requirements}}',
     success: 'Nome de usuário atualizado com sucesso.',
   },

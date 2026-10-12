@@ -76,7 +76,7 @@ describe('validateUsernameHardFloor', () => {
   });
   it('returns "invalid_charset_hard" for an unsupported character', () => {
     expect(validateUsernameHardFloor('ab c')).toBe('invalid_charset_hard');
-    expect(validateUsernameHardFloor('nguyen.van')).toBe('invalid_charset_hard');
+    expect(validateUsernameHardFloor('nguyen@van')).toBe('invalid_charset_hard');
   });
   it('returns undefined for a valid username', () => {
     expect(validateUsernameHardFloor('abc')).toBeUndefined();
@@ -88,6 +88,14 @@ describe('validateUsernameHardFloor', () => {
   });
   it('rejects a leading hyphen', () => {
     expect(validateUsernameHardFloor('-abc')).toBe('invalid_charset_hard');
+  });
+  // Sdvico: usernames imported from integrated systems contain periods (e.g. `nguyen.van`).
+  it('accepts periods after the first character', () => {
+    expect(validateUsernameHardFloor('nguyen.van')).toBeUndefined();
+    expect(validateUsernameHardFloor('nguyen.van-a_1')).toBeUndefined();
+  });
+  it('rejects a leading period', () => {
+    expect(validateUsernameHardFloor('.abc')).toBe('invalid_charset_hard');
   });
 });
 

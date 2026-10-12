@@ -2,7 +2,7 @@ const user = {
   username_already_in_use: 'This username is already in use.',
   username_starts_with_number: 'Username cannot start with a number.',
   username_invalid_charset_hard:
-    'Username can only contain letters, numbers, underscores, and hyphens.',
+    'Username can only contain letters, numbers, underscores, hyphens, and periods.',
   username_too_short: 'Username is too short.',
   username_too_long: 'Username is too long.',
   username_uppercase_not_allowed: 'Username cannot contain uppercase letters.',

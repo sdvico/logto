@@ -1,7 +1,8 @@
 const user = {
   username_already_in_use: 'Tên đăng nhập này đã được sử dụng.',
   username_starts_with_number: 'Tên đăng nhập không được bắt đầu bằng số.',
-  username_invalid_charset_hard: 'Tên đăng nhập chỉ được chứa chữ, số, gạch dưới và gạch ngang.',
+  username_invalid_charset_hard:
+    'Tên đăng nhập chỉ được chứa chữ, số, gạch dưới, gạch ngang và dấu chấm.',
   username_too_short: 'Tên đăng nhập quá ngắn.',
   username_too_long: 'Tên đăng nhập quá dài.',
   username_uppercase_not_allowed: 'Tên đăng nhập không được chứa chữ hoa.',

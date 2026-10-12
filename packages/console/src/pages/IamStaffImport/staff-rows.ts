@@ -211,9 +211,9 @@ export const unitKeyOf = (customData: unknown): string | undefined => {
   return code === undefined ? type : `${type}:${code}`;
 };
 
-/** Tên hợp lệ với Logto (`^[A-Z_a-z][\w-]*$`): đổi ký tự lạ thành `_`, đầu không phải chữ hoặc `_` thì thêm `u_`. */
+/** Tên hợp lệ với Logto (`^[A-Z_a-z][\w.-]*$`): đổi ký tự lạ thành `_`, đầu không phải chữ hoặc `_` thì thêm `u_`. */
 export const suggestUsername = (username: string) => {
-  const replaced = username.replaceAll(/[^\w-]/g, '_');
+  const replaced = username.replaceAll(/[^\w.-]/g, '_');
   return /^[A-Z_a-z]/.test(replaced) ? replaced : `u_${replaced}`;
 };
 

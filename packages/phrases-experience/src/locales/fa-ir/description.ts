@@ -47,7 +47,7 @@ const description = {
   enter_password_for: 'با رمز عبور وارد {{method}} {{value}} شوید',
   enter_username: 'نام کاربری را تنظیم کنید',
   enter_username_description:
-    'نام کاربری جایگزینی برای ورود است. نام کاربری باید فقط شامل حروف، اعداد و زیرخط و خط تیره باشد.',
+    'نام کاربری جایگزینی برای ورود است. نام کاربری باید فقط شامل حروف، اعداد و زیرخط و خط تیره و نقطه باشد.',
   enter_username_policy_description: 'نام کاربری جایگزینی برای ورود است. {{requirements}}',
   link_email: 'پیوند ایمیل',
   link_phone: 'پیوند تلفن',

@@ -2,7 +2,7 @@ const user = {
   username_already_in_use: 'اسم المستخدم هذا مستخدم بالفعل.',
   username_starts_with_number: 'لا يمكن أن يبدأ اسم المستخدم برقم.',
   username_invalid_charset_hard:
-    'اسم المستخدم يمكن أن يحتوي فقط على حروف وأرقام وشرطات سفلية وواصلات.',
+    'اسم المستخدم يمكن أن يحتوي فقط على حروف وأرقام وشرطات سفلية وواصلات ونقاط.',
   username_too_short: 'اسم المستخدم قصير جدًا.',
   username_too_long: 'اسم المستخدم طويل جدًا.',
   username_uppercase_not_allowed: 'لا يمكن أن يحتوي اسم المستخدم على حروف كبيرة.',

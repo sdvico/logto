@@ -10,7 +10,7 @@ const error = {
   username_exists: '사용자 이름이 이미 존재해요.',
   username_should_not_start_with_number: '사용자 이름은 숫자로 시작하면 안 돼요.',
   username_invalid_charset:
-    '사용자 이름은 문자, 숫자, _(밑줄 문자) 및 하이픈으로만 이루어져야 해요.',
+    '사용자 이름은 문자, 숫자, _(밑줄 문자) 및 하이픈 및 마침표로만 이루어져야 해요.',
   username_too_short: '사용자 이름은 최소 {{min}}자 이상이어야 해요.',
   username_too_long: '사용자 이름은 최대 {{max}}자 이하여야 해요.',
   username_uppercase_not_allowed: '사용자 이름에는 대문자가 허용되지 않아요.',

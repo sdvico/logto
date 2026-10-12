@@ -107,7 +107,7 @@ describe('unitKeyOf', () => {
 
 describe('suggestUsername', () => {
   it('makes usernames valid for Logto', () => {
-    expect(suggestUsername('nguyen.van-a')).toBe('nguyen_van-a');
+    expect(suggestUsername('nguyen van.a')).toBe('nguyen_van.a');
     expect(suggestUsername('2026cb')).toBe('u_2026cb');
     expect(suggestUsername('-cb')).toBe('u_-cb');
   });
@@ -166,14 +166,26 @@ describe('checkRows', () => {
   it('renames an invalid username with a warning', () => {
     const [draft] = reviewOf({
       account_id: 'a1',
-      username: 'nguyen.van-a',
+      username: 'nguyen van.a',
       units: 'CHI_CUC:22',
       password_bcrypt: 'x',
     });
 
-    expect(draft?.username).toBe('nguyen_van-a');
+    expect(draft?.username).toBe('nguyen_van.a');
     expect(codesOf(draft!)).toEqual(['USERNAME_RENAMED']);
     expect(hasBlockingIssue(draft!)).toBe(false);
+  });
+
+  it('keeps a username with periods as in the source system', () => {
+    const [draft] = reviewOf({
+      account_id: 'a1',
+      username: 'nguyen.van',
+      units: 'CHI_CUC:22',
+      password_bcrypt: 'x',
+    });
+
+    expect(draft?.username).toBe('nguyen.van');
+    expect(codesOf(draft!)).not.toContain('USERNAME_RENAMED');
   });
 
   it('keeps a username with hyphens as in MKN', () => {

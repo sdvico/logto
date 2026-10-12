@@ -14,7 +14,7 @@ const errors = {
   required_field_missing_plural: 'Bạn phải nhập ít nhất một {{field}}',
   more_details: 'Xem thêm chi tiết',
   username_pattern_error:
-    'Tên đăng nhập chỉ được chứa chữ cái, số, gạch dưới hoặc gạch ngang và không được bắt đầu bằng số hay gạch ngang.',
+    'Tên đăng nhập chỉ được chứa chữ cái, số, gạch dưới, gạch ngang hoặc dấu chấm và không được bắt đầu bằng số, gạch ngang hay dấu chấm.',
   email_pattern_error: 'Địa chỉ email không hợp lệ.',
   phone_pattern_error: 'Số điện thoại không hợp lệ.',
   insecure_contexts: 'Không hỗ trợ ngữ cảnh không an toàn (non-HTTPS).',

@@ -10,7 +10,7 @@ const error = {
   username_exists: 'Uživatelské jméno již existuje',
   username_should_not_start_with_number: 'Uživatelské jméno nesmí začínat číslem',
   username_invalid_charset:
-    'Uživatelské jméno může obsahovat pouze písmena, čísla a podtržítka a pomlčky',
+    'Uživatelské jméno může obsahovat pouze písmena, čísla a podtržítka a pomlčky a tečky',
   username_too_short: 'Uživatelské jméno musí být alespoň {{min}} znaků dlouhé.',
   username_too_long: 'Uživatelské jméno musí být nejvýše {{max}} znaků dlouhé.',
   username_uppercase_not_allowed: 'Velká písmena nejsou povolena v uživatelských jménech.',

@@ -47,7 +47,7 @@ const description = {
   enter_password_for: 'Zaloguj się przy użyciu hasła do {{method}} {{value}}',
   enter_username: 'Ustaw nazwę użytkownika',
   enter_username_description:
-    'Nazwa użytkownika jest alternatywną formą logowania. Nazwa użytkownika powinna zawierać tylko litery, cyfry i podkreślenia i myślniki.',
+    'Nazwa użytkownika jest alternatywną formą logowania. Nazwa użytkownika powinna zawierać tylko litery, cyfry i podkreślenia i myślniki i kropki.',
   enter_username_policy_description:
     'Nazwa użytkownika jest alternatywną formą logowania. {{requirements}}',
   link_email: 'Połącz adres email',

@@ -67,7 +67,7 @@ const account_center = {
   },
   username: {
     title: 'Đặt tên đăng nhập',
-    description: 'Tên đăng nhập chỉ được chứa chữ cái, số, gạch dưới và gạch ngang.',
+    description: 'Tên đăng nhập chỉ được chứa chữ cái, số, gạch dưới, gạch ngang và dấu chấm.',
     policy_description: '{{requirements}}',
     success: 'Đã cập nhật tên đăng nhập thành công.',
   },

@@ -14,7 +14,7 @@ const errors = {
   required_field_missing_plural: 'Tienes que ingresar al menos un {{field}}',
   more_details: 'Más detalles',
   username_pattern_error:
-    'El nombre de usuario solo debe contener letras, números o guiones bajos y guiones y no debe comenzar con un número o un guion.',
+    'El nombre de usuario solo debe contener letras, números o guiones bajos, guiones y puntos y no debe comenzar con un número o un guion.',
   email_pattern_error: 'La dirección de correo electrónico no es válida.',
   phone_pattern_error: 'El número de teléfono no es válido.',
   insecure_contexts: 'Los contextos inseguros (no HTTPS) no son compatibles.',

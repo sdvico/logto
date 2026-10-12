@@ -4,8 +4,9 @@ export const emailOrEmailDomainRegEx =
   /^(?:[^\s@]+@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)+|@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)+)$(?![\s\S])/u;
 export const phoneRegEx = /^\d+$/;
 export const phoneInputRegEx = /^\+?[\d-( )]+$/;
-// Sdvico: also accepts hyphens after the first character, as MKN usernames do (e.g. `chinnd-THO`).
-export const usernameRegEx = /^[A-Z_a-z][\w-]*$/;
+// Sdvico: also accepts hyphens and periods after the first character, as usernames from the
+// integrated systems do (e.g. `chinnd-THO`, `nguyen.van`).
+export const usernameRegEx = /^[A-Z_a-z][\w.-]*$/;
 export const webRedirectUriProtocolRegEx = /^https?:$/;
 export const mobileUriSchemeProtocolRegEx = /^(?!http(s)?:)[a-z][\d+_a-z-]*(\.[\d+_a-z-]+)*:$/;
 export const hexColorRegEx = /^#[\da-f]{3}([\da-f]{3})?$/i;

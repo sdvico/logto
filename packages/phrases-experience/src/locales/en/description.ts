@@ -48,7 +48,7 @@ const description = {
   enter_password_for: 'Sign in with the password to {{method}} {{value}}',
   enter_username: 'Set username',
   enter_username_description:
-    'Username is an alternative for sign-in. Username should contain only letters, numbers, underscores, and hyphens.',
+    'Username is an alternative for sign-in. Username should contain only letters, numbers, underscores, hyphens, and periods.',
   enter_username_policy_description: 'Username is an alternative for sign-in. {{requirements}}',
   link_email: 'Link email',
   link_phone: 'Link phone',

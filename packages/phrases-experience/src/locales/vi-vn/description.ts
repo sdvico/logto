@@ -48,7 +48,7 @@ const description = {
   enter_password_for: 'Đăng nhập bằng mật khẩu với {{method}} {{value}}',
   enter_username: 'Đặt tên đăng nhập',
   enter_username_description:
-    'Tên đăng nhập là một cách khác để đăng nhập. Tên đăng nhập chỉ được chứa chữ cái, số, gạch dưới và gạch ngang.',
+    'Tên đăng nhập là một cách khác để đăng nhập. Tên đăng nhập chỉ được chứa chữ cái, số, gạch dưới, gạch ngang và dấu chấm.',
   enter_username_policy_description:
     'Tên đăng nhập là một cách khác để đăng nhập. {{requirements}}',
   link_email: 'Liên kết email',

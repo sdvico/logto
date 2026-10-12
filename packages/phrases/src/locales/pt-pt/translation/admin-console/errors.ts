@@ -14,7 +14,7 @@ const errors = {
   required_field_missing_plural: 'Deve inserir pelo menos um {{field}}',
   more_details: 'Mais detalhes',
   username_pattern_error:
-    'O nome de utilizador deve conter apenas letras, números, underscores ou hífenes e não deve começar com um número ou hífen.',
+    'O nome de utilizador deve conter apenas letras, números, underscores ou hífenes ou pontos e não deve começar com um número ou hífen.',
   email_pattern_error: 'O endereço de e-mail é inválido.',
   phone_pattern_error: 'O número de telefone é inválido.',
   insecure_contexts: 'Contextos inseguros (não HTTPS) não são compatíveis.',

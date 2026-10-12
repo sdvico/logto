@@ -11,7 +11,7 @@ const error = {
   username_exists: 'Username already exists',
   username_should_not_start_with_number: 'Username should not start with a number',
   username_invalid_charset:
-    'Username should only contain letters, numbers, underscores, or hyphens.',
+    'Username should only contain letters, numbers, underscores, hyphens, or periods.',
   username_too_short: 'Username must be at least {{min}} characters long.',
   username_too_long: 'Username must be at most {{max}} characters long.',
   username_uppercase_not_allowed: 'Uppercase letters are not allowed in usernames.',

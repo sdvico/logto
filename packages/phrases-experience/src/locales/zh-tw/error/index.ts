@@ -9,7 +9,7 @@ const error = {
   password_required: '密碼必填',
   username_exists: '使用者名稱已存在',
   username_should_not_start_with_number: '使用者名稱不能以數字開頭',
-  username_invalid_charset: '使用者名稱只能包含英文字母、數字或下劃線和連字符。',
+  username_invalid_charset: '使用者名稱只能包含英文字母、數字或下劃線和連字符和點。',
   username_too_short: '使用者名稱至少應有 {{min}} 個字元。',
   username_too_long: '使用者名稱最多可以有 {{max}} 個字元。',
   username_uppercase_not_allowed: '使用者名稱中不允許使用大寫字母。',

@@ -274,12 +274,14 @@ Phía Logto: trang Console `iam-staff-import` (menu Người dùng › "Nhập c
 - Tra đơn vị: `CHI_CUC:22` → tổ chức `type = CHI_CUC`, `provinceCode = 22`; `DON_BP`, `CANG` theo `sourceCode`;
   `CUC` theo `type`. `KN_VUNG` khớp 5 tổ chức nên báo không tìm thấy, người duyệt chọn tay.
 - Bước Soát báo từng dòng: đã nhập (`externalIds.mkn` có sẵn, tự bỏ chọn), trùng tên trên IAM hoặc trong tệp
-  (chặn), tên đăng nhập đổi (`.`, khoảng trắng, chữ số hoặc `-` ở đầu không hợp lệ với Logto: gợi ý thay bằng `_`), email/điện thoại
+  (chặn), tên đăng nhập đổi (khoảng trắng, ký tự lạ, chữ số, `-` hoặc `.` ở đầu không hợp lệ với Logto: gợi ý thay bằng `_`), email/điện thoại
   bỏ, chưa có tổ chức, không có mật khẩu, trạng thái MKN không ACTIVE (sẽ khoá), ghi chú khi xuất.
 - Id người dùng do Logto sinh (không còn `u-mkn-…`); đồng bộ CBVMS nối bằng `external_ids.mkn`.
 - Chốt 10/10 (người dùng): Logto nhận username có `-` như MKN. Sửa gốc `usernameRegEx` ở `@logto/core-kit` thành
   `^[A-Z_a-z][\w-]*$` (API quản trị, API tài khoản, trang đăng nhập, Console đều dùng chung); sửa câu thông báo
   bộ ký tự ở `phrases` và `phrases-experience` cho mọi ngôn ngữ. Chỉ nới thêm đầu vào, không đổi dữ liệu cũ.
+- Chốt 12/10 (người dùng): Logto nhận cả `.` trong username (vd `nguyen.van`). `usernameRegEx` thành
+  `^[A-Z_a-z][\w.-]*$`; câu thông báo bộ ký tự ở mọi ngôn ngữ thêm dấu chấm. `.` ở đầu vẫn không hợp lệ.
 
 Đã kiểm 10/10 trên máy local:
 - Script xuất trên `mknv3`: 8 cán bộ, xuất 7, bỏ `admin` (nhóm hệ thống); thiếu `--out` thì dừng.

@@ -66,7 +66,7 @@ const account_center = {
   },
   username: {
     title: 'تنظیم نام کاربری',
-    description: 'نام کاربری باید فقط شامل حروف، اعداد و زیرخط و خط تیره باشد.',
+    description: 'نام کاربری باید فقط شامل حروف، اعداد و زیرخط و خط تیره و نقطه باشد.',
     policy_description: '{{requirements}}',
     success: 'نام کاربری با موفقیت به‌روزرسانی شد.',
   },

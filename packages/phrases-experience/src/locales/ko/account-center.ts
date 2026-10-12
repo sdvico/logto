@@ -65,7 +65,7 @@ const account_center = {
   },
   username: {
     title: '사용자 이름 설정',
-    description: '사용자 이름은 문자, 숫자, 밑줄(_) 및 하이픈만 사용할 수 있습니다.',
+    description: '사용자 이름은 문자, 숫자, 밑줄(_) 및 하이픈 및 마침표만 사용할 수 있습니다.',
     policy_description: '{{requirements}}',
     success: '사용자 이름이 성공적으로 업데이트되었습니다.',
   },

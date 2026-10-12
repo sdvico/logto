@@ -72,7 +72,8 @@ const account_center = {
   },
   username: {
     title: 'Imposta nome utente',
-    description: 'Il nome utente può contenere solo lettere, numeri, trattini bassi e trattini.',
+    description:
+      'Il nome utente può contenere solo lettere, numeri, trattini bassi e trattini e punti.',
     policy_description: '{{requirements}}',
     success: 'Nome utente aggiornato con successo.',
   },

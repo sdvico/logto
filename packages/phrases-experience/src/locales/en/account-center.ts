@@ -68,7 +68,7 @@ const account_center = {
   },
   username: {
     title: 'Set username',
-    description: 'Username must contain only letters, numbers, underscores, and hyphens.',
+    description: 'Username must contain only letters, numbers, underscores, hyphens, and periods.',
     policy_description: '{{requirements}}',
     success: 'Username updated successfully.',
   },
