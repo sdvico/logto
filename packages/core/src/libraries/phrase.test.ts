@@ -5,10 +5,9 @@ import deepmerge from 'deepmerge';
 import {
   enTag,
   mockEnCustomPhrase,
-  mockZhCnCustomPhrase,
+  mockViVnCustomPhrase,
   mockZhHkCustomPhrase,
-  trTrTag,
-  zhCnTag,
+  viVnTag,
   mockTag,
 } from '#src/__mocks__/custom-phrase.js';
 import RequestError from '#src/errors/RequestError/index.js';
@@ -21,9 +20,10 @@ const englishBuiltInPhrase = resource[enTag];
 const customOnlyLanguage = mockTag;
 const customOnlyCustomPhrase = mockZhHkCustomPhrase;
 
-const customizedLanguage = zhCnTag;
-const customizedBuiltInPhrase = resource[zhCnTag];
-const customizedCustomPhrase = mockZhCnCustomPhrase;
+// The phrases package ships only `en` and `vi-VN`, so `vi-VN` is the one non-English built-in language.
+const customizedLanguage = viVnTag;
+const customizedBuiltInPhrase = resource[viVnTag];
+const customizedCustomPhrase = mockViVnCustomPhrase;
 
 const mockCustomPhrases: Record<string, CustomPhrase> = {
   [enTag]: mockEnCustomPhrase,
@@ -107,9 +107,10 @@ describe('when the language is not English', () => {
   });
 
   it('should be built-in phrase when there is built-in phrase and no custom phrase', async () => {
-    const builtInOnlyLanguage = trTrTag;
-    const builtInOnlyPhrase = resource[trTrTag];
-    await expect(getPhrases(builtInOnlyLanguage)).resolves.toEqual(builtInOnlyPhrase);
+    findCustomPhraseByLanguageTag.mockRejectedValueOnce(
+      new RequestError({ code: 'entity.not_found', status: 404 })
+    );
+    await expect(getPhrases(viVnTag)).resolves.toEqual(resource[viVnTag]);
   });
 
   it('should be built-in phrase when there is custom phrase and no built-in phrase', async () => {

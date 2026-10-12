@@ -5,6 +5,7 @@ import { mockId } from '#src/test-utils/nanoid.js';
 export const enTag = 'en';
 export const trTrTag = 'tr-TR';
 export const zhCnTag = 'zh-CN';
+export const viVnTag = 'vi-VN';
 export const mockTag = 'fo-BA';
 
 export const mockEnCustomPhrase = {
@@ -33,6 +34,21 @@ export const mockZhCnCustomPhrase = {
       email: '邮箱 3',
       phone_number: '手机号 4',
       confirm_password: '确认密码 5',
+    },
+  },
+} satisfies CustomPhrase;
+
+export const mockViVnCustomPhrase = {
+  tenantId: 'fake_tenant',
+  id: mockId,
+  languageTag: viVnTag,
+  translation: {
+    input: {
+      username: 'Tên đăng nhập 1',
+      password: 'Mật khẩu 2',
+      email: 'Email 3',
+      phone_number: 'Số điện thoại 4',
+      confirm_password: 'Nhập lại mật khẩu 5',
     },
   },
 } satisfies CustomPhrase;

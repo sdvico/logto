@@ -20,16 +20,15 @@ describe('koaI18next', () => {
     jest.clearAllMocks();
   });
 
+  // The phrases package ships only `en` and `vi-VN`.
   it.each([
-    ['zh-cn', 'zh-CN'],
-    ['es-MX', 'es'],
-    ['fr-CA', 'fr'],
-    ['pt-BR', 'pt-BR'],
-    ['pt-PT', 'pt-PT'],
-    ['pl', 'pl-PL'],
-    ['en;q=0.5,es-MX;q=0.9', 'es'],
-    ['es-MX;q=0.5,fr;q=0.9', 'fr'],
-    ['xx-XX,fr-CA;q=0.9', 'fr'],
+    ['vi', 'vi-VN'],
+    ['vi-VN', 'vi-VN'],
+    ['vi-vn', 'vi-VN'],
+    ['en;q=0.5,vi;q=0.9', 'vi-VN'],
+    ['vi;q=0.5,en;q=0.9', 'en'],
+    ['xx-XX,vi;q=0.9', 'vi-VN'],
+    ['fr-CA', 'en'],
     ['xx-XX', 'en'],
     ['*', 'en'],
     ['', 'en'],
@@ -51,32 +50,32 @@ describe('koaI18next', () => {
 
   it('prioritizes the locale query over Accept-Language', async () => {
     const ctx = {
-      ...createContextWithRouteParameters({ headers: { 'accept-language': 'es' } }),
-      query: { locale: 'fr-CA' },
+      ...createContextWithRouteParameters({ headers: { 'accept-language': 'en' } }),
+      query: { locale: 'vi' },
     };
 
     await koaI18next()(ctx, next);
 
-    expect(ctx.locale).toEqual('fr');
+    expect(ctx.locale).toEqual('vi-VN');
   });
 
   it('keeps the language scoped to each request', async () => {
-    const spanishContext = {
-      ...createContextWithRouteParameters({ headers: { 'accept-language': 'es-MX' } }),
+    const vietnameseContext = {
+      ...createContextWithRouteParameters({ headers: { 'accept-language': 'vi' } }),
       query: {},
     };
-    const frenchContext = {
-      ...createContextWithRouteParameters({ headers: { 'accept-language': 'fr-CA' } }),
+    const englishContext = {
+      ...createContextWithRouteParameters({ headers: { 'accept-language': 'en-US' } }),
       query: {},
     };
 
-    await koaI18next()(spanishContext, next);
-    await koaI18next()(frenchContext, next);
+    await koaI18next()(vietnameseContext, next);
+    await koaI18next()(englishContext, next);
 
-    expect(spanishContext.i18n.language).toEqual('es');
-    expect(frenchContext.i18n.language).toEqual('fr');
-    expect(spanishContext.i18n).not.toBe(frenchContext.i18n);
-    expect(spanishContext.i18n).not.toBe(i18next);
+    expect(vietnameseContext.i18n.language).toEqual('vi-VN');
+    expect(englishContext.i18n.language).toEqual('en');
+    expect(vietnameseContext.i18n).not.toBe(englishContext.i18n);
+    expect(vietnameseContext.i18n).not.toBe(i18next);
     expect(i18next.language).toEqual('en');
   });
 });
