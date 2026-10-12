@@ -1,3 +1,5 @@
+import { execSync } from 'node:child_process';
+
 import mdx from '@mdx-js/rollup';
 import react from '@vitejs/plugin-react';
 import dotenv from 'dotenv';
@@ -14,6 +16,23 @@ import { defaultConfig, manualChunks } from '../../vite.shared.config';
 // prefix for our environment variables which it is required in Vite.
 // @see {@link https://vitejs.dev/config/shared-options.html#envprefix}
 dotenv.config({ path: await findUp('.env', {}) });
+
+/**
+ * Sdvico: the commit of this build. The Docker build has no `.git` and passes it as `GIT_COMMIT`
+ * (an empty build arg means unknown); elsewhere it is read from git, undefined without git.
+ */
+const readBuildCommit = () => {
+  if (process.env.GIT_COMMIT) {
+    return process.env.GIT_COMMIT;
+  }
+
+  try {
+    return execSync('git rev-parse HEAD', {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+  } catch {}
+};
 
 const buildConfig = (mode: string): UserConfig => ({
   base: `${process.env.CONSOLE_PUBLIC_URL ?? '/console'}`,
@@ -59,12 +78,13 @@ const buildConfig = (mode: string): UserConfig => ({
     'import.meta.env.LOGTO_OSS_SURVEY_ENDPOINT': JSON.stringify(
       process.env.LOGTO_OSS_SURVEY_ENDPOINT
     ),
-    // sdvico: an, hien lai muc nao trong sidebar qua bien moi trong .env goc repo, khong dong
+    // Sdvico: an, hien lai muc nao trong sidebar qua bien moi trong .env goc repo, khong dong
     // code - xem HIDDEN_SIDEBAR_SECTIONS / HIDDEN_SIDEBAR_ITEMS trong .env va env.ts.
-    'import.meta.env.HIDDEN_SIDEBAR_SECTIONS': JSON.stringify(
-      process.env.HIDDEN_SIDEBAR_SECTIONS
-    ),
+    'import.meta.env.HIDDEN_SIDEBAR_SECTIONS': JSON.stringify(process.env.HIDDEN_SIDEBAR_SECTIONS),
     'import.meta.env.HIDDEN_SIDEBAR_ITEMS': JSON.stringify(process.env.HIDDEN_SIDEBAR_ITEMS),
+    // Sdvico: commit and time of this build, shown under the Console logo.
+    'import.meta.env.BUILD_COMMIT': JSON.stringify(readBuildCommit()),
+    'import.meta.env.BUILD_TIME': JSON.stringify(new Date().toISOString()),
     // `@withtyped/client` needs this to be defined. We can optimize this later.
     'process.env': {},
   },

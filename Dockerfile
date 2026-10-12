@@ -29,6 +29,10 @@ ENV APPLICATIONINSIGHTS_CONNECTION_STRING=${applicationinsights_connection_strin
 ARG logto_oss_survey_endpoint=
 ENV LOGTO_OSS_SURVEY_ENDPOINT=${logto_oss_survey_endpoint}
 
+# Sdvico: commit shown under the Console logo (`.git` is not in the build context).
+ARG git_commit=
+ENV GIT_COMMIT=${git_commit}
+
 RUN pnpm -r build
 
 ### Add official connectors ###

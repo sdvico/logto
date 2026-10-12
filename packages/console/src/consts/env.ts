@@ -11,6 +11,9 @@ export const isProtectedAppLocalDevEnabled =
   !isProduction && yes(normalizeEnv(import.meta.env.PROTECTED_APP_LOCAL_DEV));
 export const isProtectedAppEnabled = isCloud || isProtectedAppLocalDevEnabled;
 export const adminEndpoint = normalizeEnv(import.meta.env.ADMIN_ENDPOINT);
+// Sdvico: commit and time of this build, shown under the Console logo (see vite.config.ts).
+export const buildCommit = normalizeEnv(import.meta.env.BUILD_COMMIT);
+export const buildTime = normalizeEnv(import.meta.env.BUILD_TIME);
 
 export const isDevFeaturesEnabled =
   !isProduction ||
@@ -39,7 +42,7 @@ export const postHogUiHost = normalizeEnv(import.meta.env.POSTHOG_PUBLIC_UI_HOST
 export const ossSurveyEndpoint = normalizeEnv(import.meta.env.LOGTO_OSS_SURVEY_ENDPOINT);
 
 /**
- * sdvico: danh sach section/item sidebar can AN bot trong Console, cau hinh qua .env (file
+ * Sdvico: danh sach section/item sidebar can AN bot trong Console, cau hinh qua .env (file
  * `HIDDEN_SIDEBAR_SECTIONS`/`HIDDEN_SIDEBAR_ITEMS`, phan cach bang dau phay, dung dung `title`
  * key trong `useSidebarMenuItems`). De trong = hien tat ca. Muc dich: don gian hoa giao dien cho
  * Cuc Quan ly, khong xoa tinh nang - chi can xoa/sua bien trong .env de mo lai bat cu luc nao,
