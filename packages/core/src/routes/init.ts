@@ -30,6 +30,7 @@ import domainRoutes from './domain.js';
 import emailTemplateRoutes from './email-template/index.js';
 import experienceApiRoutes from './experience/index.js';
 import hookRoutes from './hook.js';
+import iamAdminRoutes from './iam-admin/index.js';
 import { iamSyncRoutes, iamSyncAdminPreviewRoutes } from './iam-sync.js';
 import interactionRoutes from './interaction/index.js';
 import logRoutes from './log.js';
@@ -110,6 +111,8 @@ const createRouters = (tenant: TenantContext) => {
   // chung guard scope 'all' cua managementRouter o tren - xem routes/iam-sync.ts.
   const iamSyncRouter: AnonymousRouter = new Router();
   iamSyncRoutes(iamSyncRouter, tenant);
+  // Sdvico IAM Admin API: cung cach xac thuc rieng, resource "iam-admin" - xem routes/iam-admin/.
+  iamAdminRoutes(iamSyncRouter, tenant);
 
   // General anonymous router for publicly accessible APIs
   const anonymousRouter: AnonymousRouter = new Router();

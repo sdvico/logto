@@ -1,0 +1,644 @@
+{
+  "tags": [
+    {
+      "name": "Iam admin",
+      "description": "sdvico IAM Admin API used by CBVMS to manage IAM users and applications in place of the Logto Console. Authenticated with its own API resource, not the Management API."
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "IamAdminOAuth2": {
+        "type": "oauth2",
+        "description": "Machine-to-machine access token for the IAM Admin API. Request it with `grant_type=client_credentials` and `resource=https://<tenant-id>.logto.app/iam-admin`. A token issued for the Management API is rejected with 401.",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/oidc/token",
+            "scopes": {
+              "iam-admin:users:read": "Read IAM users, organizations and organization roles.",
+              "iam-admin:users:write": "Create, update, suspend and delete IAM users and change their organizations.",
+              "iam-admin:apps:read": "Read IAM applications grouped by system.",
+              "iam-admin:apps:write": "Create and delete IAM applications."
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/iam-admin/v1/users": {
+      "get": {
+        "summary": "List IAM users",
+        "description": "List every IAM user with their organizations and organization role titles, filtered, sorted and paginated. `lastSignInApplication` is the application of the user's latest successful authorization code exchange.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:read"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of users and the number of users matching the filters."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:read` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "400": {
+            "description": "A query parameter is invalid."
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Case-insensitive match on name, username and email; digits also match the phone number."
+          },
+          {
+            "name": "organizationId",
+            "in": "query",
+            "description": "Only users who are members of this organization."
+          },
+          {
+            "name": "roleCode",
+            "in": "query",
+            "description": "Only users holding this organization role code (for example `TRUONG`). With `organizationId`, the role must be held in that organization."
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "`active`, `suspended`, or `no-organization` for users without any organization."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number, starting from 1."
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Users per page, from 1 to 100. Defaults to 20."
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "`lastSignIn` (newest first, never signed in last; default), `name`, or `createdAt` (newest first)."
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create an IAM user",
+        "description": "Create a user with a generated or given password and, optionally, a first organization with role codes. A generated temporary password is returned only in this response.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Iam-Actor",
+            "in": "header",
+            "description": "Username of the person acting in the calling system, URL-encoded. Required; recorded in the audit log."
+          },
+          {
+            "name": "X-Iam-Actor-Id",
+            "in": "header",
+            "description": "Stable ID of that person in the calling system. Optional; recorded in the audit log."
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The created user and the temporary password, if generated."
+          },
+          "400": {
+            "description": "The body is invalid or the `X-Iam-Actor` header is missing."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:write` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "404": {
+            "description": "The organization does not exist."
+          },
+          "422": {
+            "description": "The username, email or phone number is already in use."
+          }
+        }
+      }
+    },
+    "/api/iam-admin/v1/user-stats": {
+      "get": {
+        "summary": "Get IAM user counts",
+        "description": "Count all users, active users, suspended users, users without an organization, and organizations.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:read"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User and organization counts."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:read` scope, or the application is not a member of an organization with `level = trung_uong`."
+          }
+        }
+      }
+    },
+    "/api/iam-admin/v1/users/{id}": {
+      "get": {
+        "summary": "Get an IAM user",
+        "description": "Get one user with their organizations, the parent path of each organization, external IDs and password metadata. The password itself is never returned.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:read"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:read` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "404": {
+            "description": "The user does not exist."
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The IAM user ID."
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Update an IAM user",
+        "description": "Update the name, username, email or phone number. Send `null` to clear the email or phone number.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The IAM user ID."
+          },
+          {
+            "name": "X-Iam-Actor",
+            "in": "header",
+            "description": "Username of the person acting in the calling system, URL-encoded. Required; recorded in the audit log."
+          },
+          {
+            "name": "X-Iam-Actor-Id",
+            "in": "header",
+            "description": "Stable ID of that person in the calling system. Optional; recorded in the audit log."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated user."
+          },
+          "400": {
+            "description": "The body is invalid or the `X-Iam-Actor` header is missing."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:write` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "404": {
+            "description": "The user does not exist."
+          },
+          "422": {
+            "description": "The username, email or phone number is already in use."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an IAM user",
+        "description": "Revoke the user's sessions and delete the user. Past logs are kept.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The IAM user ID."
+          },
+          {
+            "name": "X-Iam-Actor",
+            "in": "header",
+            "description": "Username of the person acting in the calling system, URL-encoded. Required; recorded in the audit log."
+          },
+          {
+            "name": "X-Iam-Actor-Id",
+            "in": "header",
+            "description": "Stable ID of that person in the calling system. Optional; recorded in the audit log."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The user was deleted."
+          },
+          "400": {
+            "description": "The body is invalid or the `X-Iam-Actor` header is missing."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:write` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "404": {
+            "description": "The user does not exist."
+          }
+        }
+      }
+    },
+    "/api/iam-admin/v1/organizations": {
+      "get": {
+        "summary": "List IAM organizations",
+        "description": "List every organization without pagination, with its custom data fields and member count. Build the tree from `parentOrgId`.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:read"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All organizations."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:read` scope, or the application is not a member of an organization with `level = trung_uong`."
+          }
+        }
+      }
+    },
+    "/api/iam-admin/v1/organization-roles": {
+      "get": {
+        "summary": "List IAM organization roles",
+        "description": "List organization roles with their stable codes.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:read"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All organization roles."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:read` scope, or the application is not a member of an organization with `level = trung_uong`."
+          }
+        }
+      }
+    },
+    "/api/iam-admin/v1/users/{id}/suspension": {
+      "put": {
+        "summary": "Suspend or unsuspend an IAM user",
+        "description": "Suspending also revokes every session of the user. The reason is recorded in the audit log.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The IAM user ID."
+          },
+          {
+            "name": "X-Iam-Actor",
+            "in": "header",
+            "description": "Username of the person acting in the calling system, URL-encoded. Required; recorded in the audit log."
+          },
+          {
+            "name": "X-Iam-Actor-Id",
+            "in": "header",
+            "description": "Stable ID of that person in the calling system. Optional; recorded in the audit log."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated user."
+          },
+          "400": {
+            "description": "The body is invalid or the `X-Iam-Actor` header is missing."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:write` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "404": {
+            "description": "The user does not exist."
+          }
+        }
+      }
+    },
+    "/api/iam-admin/v1/users/{id}/password-reset": {
+      "post": {
+        "summary": "Reset the password of an IAM user",
+        "description": "Set a generated temporary password, returned only in this response, and by default revoke every session.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The IAM user ID."
+          },
+          {
+            "name": "X-Iam-Actor",
+            "in": "header",
+            "description": "Username of the person acting in the calling system, URL-encoded. Required; recorded in the audit log."
+          },
+          {
+            "name": "X-Iam-Actor-Id",
+            "in": "header",
+            "description": "Stable ID of that person in the calling system. Optional; recorded in the audit log."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The temporary password."
+          },
+          "400": {
+            "description": "The body is invalid or the `X-Iam-Actor` header is missing."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:write` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "404": {
+            "description": "The user does not exist."
+          }
+        }
+      }
+    },
+    "/api/iam-admin/v1/users/{id}/organizations/{orgId}": {
+      "put": {
+        "summary": "Set the roles of an IAM user in an organization",
+        "description": "Add the user to the organization if needed, then replace all of their roles there with `roleCodes`. To leave the organization, use the DELETE operation.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The IAM user ID."
+          },
+          {
+            "name": "orgId",
+            "in": "path",
+            "description": "The organization ID."
+          },
+          {
+            "name": "X-Iam-Actor",
+            "in": "header",
+            "description": "Username of the person acting in the calling system, URL-encoded. Required; recorded in the audit log."
+          },
+          {
+            "name": "X-Iam-Actor-Id",
+            "in": "header",
+            "description": "Stable ID of that person in the calling system. Optional; recorded in the audit log."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated user."
+          },
+          "400": {
+            "description": "The body is invalid or the `X-Iam-Actor` header is missing."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:write` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "404": {
+            "description": "The user or the organization does not exist."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove an IAM user from an organization",
+        "description": "Remove the membership and every role the user held in that organization.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:users:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The IAM user ID."
+          },
+          {
+            "name": "orgId",
+            "in": "path",
+            "description": "The organization ID."
+          },
+          {
+            "name": "X-Iam-Actor",
+            "in": "header",
+            "description": "Username of the person acting in the calling system, URL-encoded. Required; recorded in the audit log."
+          },
+          {
+            "name": "X-Iam-Actor-Id",
+            "in": "header",
+            "description": "Stable ID of that person in the calling system. Optional; recorded in the audit log."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The membership was removed."
+          },
+          "400": {
+            "description": "The body is invalid or the `X-Iam-Actor` header is missing."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:users:write` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "404": {
+            "description": "The user is not a member of the organization."
+          }
+        }
+      }
+    },
+    "/api/iam-admin/v1/systems": {
+      "get": {
+        "summary": "List IAM systems",
+        "description": "List applications of type Traditional, SPA, Native and machine-to-machine, grouped by `custom_data.system`. An application without a system forms its own system named after it.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:apps:read"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Systems with their applications."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:apps:read` scope, or the application is not a member of an organization with `level = trung_uong`."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an IAM system",
+        "description": "Create 1 to 10 applications of one system in one call. Redirect URIs are validated as in the Logto Console (custom schemes for Native). Machine-to-machine applications may only receive the `machine:iam-sync` role. If any step fails, the applications already created are deleted. Client secrets are returned only in this response.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:apps:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Iam-Actor",
+            "in": "header",
+            "description": "Username of the person acting in the calling system, URL-encoded. Required; recorded in the audit log."
+          },
+          {
+            "name": "X-Iam-Actor-Id",
+            "in": "header",
+            "description": "Stable ID of that person in the calling system. Optional; recorded in the audit log."
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The issuer and connection details of each application, in request order."
+          },
+          "400": {
+            "description": "The body is invalid or the `X-Iam-Actor` header is missing."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:apps:write` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "409": {
+            "description": "The system key is already used."
+          }
+        }
+      }
+    },
+    "/api/iam-admin/v1/systems/{system}": {
+      "delete": {
+        "summary": "Delete an IAM system",
+        "description": "Delete every application of the system. The system of the calling application, and systems holding an application with the `machine:iam-admin` role, cannot be deleted here.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:apps:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "system",
+            "in": "path",
+            "description": "The system key."
+          },
+          {
+            "name": "X-Iam-Actor",
+            "in": "header",
+            "description": "Username of the person acting in the calling system, URL-encoded. Required; recorded in the audit log."
+          },
+          {
+            "name": "X-Iam-Actor-Id",
+            "in": "header",
+            "description": "Stable ID of that person in the calling system. Optional; recorded in the audit log."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The system was deleted."
+          },
+          "400": {
+            "description": "The body is invalid or the `X-Iam-Actor` header is missing."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token lacks the scope, or the system holds the calling application or a `machine:iam-admin` application."
+          },
+          "404": {
+            "description": "The system does not exist."
+          }
+        }
+      }
+    },
+    "/api/iam-admin/v1/applications/{id}": {
+      "get": {
+        "summary": "Get an IAM application",
+        "description": "Get one application of type Traditional, SPA, Native or machine-to-machine with its redirect URIs, CORS origins and roles. Secrets are never returned. `resource` and `scope` are set only for a machine-to-machine application holding `machine:iam-sync`.",
+        "security": [
+          {
+            "IamAdminOAuth2": ["iam-admin:apps:read"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The application ID (client ID)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The application."
+          },
+          "401": {
+            "description": "The access token is missing, invalid, or issued for another resource."
+          },
+          "403": {
+            "description": "The token does not belong to a machine-to-machine application, lacks the `iam-admin:apps:read` scope, or the application is not a member of an organization with `level = trung_uong`."
+          },
+          "404": {
+            "description": "The application does not exist, or is a Protected, SAML or third-party application."
+          }
+        }
+      }
+    }
+  }
+}

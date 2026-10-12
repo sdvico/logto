@@ -36,6 +36,23 @@ export const customRoutes: Readonly<RouteDictionary> = Object.freeze({
   // IAM Sync (sdvico)
   'get /iam-sync/v1/users': 'ListIamSyncUsers',
   'get /iam-sync-preview/users': 'ListIamSyncPreviewUsers',
+  // IAM Admin (sdvico)
+  'get /iam-admin/v1/users': 'ListIamAdminUsers',
+  'get /iam-admin/v1/user-stats': 'GetIamAdminUserStats',
+  'get /iam-admin/v1/users/:id': 'GetIamAdminUser',
+  'get /iam-admin/v1/organizations': 'ListIamAdminOrganizations',
+  'get /iam-admin/v1/organization-roles': 'ListIamAdminOrganizationRoles',
+  'post /iam-admin/v1/users': 'CreateIamAdminUser',
+  'patch /iam-admin/v1/users/:id': 'UpdateIamAdminUser',
+  'delete /iam-admin/v1/users/:id': 'DeleteIamAdminUser',
+  'put /iam-admin/v1/users/:id/suspension': 'UpdateIamAdminUserSuspension',
+  'post /iam-admin/v1/users/:id/password-reset': 'ResetIamAdminUserPassword',
+  'put /iam-admin/v1/users/:id/organizations/:orgId': 'SetIamAdminUserOrganizationRoles',
+  'delete /iam-admin/v1/users/:id/organizations/:orgId': 'DeleteIamAdminUserOrganization',
+  'get /iam-admin/v1/systems': 'ListIamAdminSystems',
+  'get /iam-admin/v1/applications/:id': 'GetIamAdminApplication',
+  'post /iam-admin/v1/systems': 'CreateIamAdminSystem',
+  'delete /iam-admin/v1/systems/:system': 'DeleteIamAdminSystem',
   // Organization users
   'post /organizations/:id/users': 'AddOrganizationUsers',
   'post /organizations/:id/users/roles': 'AssignOrganizationRolesToUsers',
