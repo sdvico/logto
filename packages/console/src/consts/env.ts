@@ -11,7 +11,9 @@ export const isProtectedAppLocalDevEnabled =
   !isProduction && yes(normalizeEnv(import.meta.env.PROTECTED_APP_LOCAL_DEV));
 export const isProtectedAppEnabled = isCloud || isProtectedAppLocalDevEnabled;
 export const adminEndpoint = normalizeEnv(import.meta.env.ADMIN_ENDPOINT);
-// Sdvico: commit and time of this build, shown under the Console logo (see vite.config.ts).
+// Sdvico: release version (`git describe --tags`), commit and time of this build, shown under the
+// Console logo (see vite.config.ts).
+export const buildVersion = normalizeEnv(import.meta.env.BUILD_VERSION);
 export const buildCommit = normalizeEnv(import.meta.env.BUILD_COMMIT);
 export const buildTime = normalizeEnv(import.meta.env.BUILD_TIME);
 

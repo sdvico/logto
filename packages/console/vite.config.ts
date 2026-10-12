@@ -17,22 +17,30 @@ import { defaultConfig, manualChunks } from '../../vite.shared.config';
 // @see {@link https://vitejs.dev/config/shared-options.html#envprefix}
 dotenv.config({ path: await findUp('.env', {}) });
 
-/**
- * Sdvico: the commit of this build. The Docker build has no `.git` and passes it as `GIT_COMMIT`
- * (an empty build arg means unknown); elsewhere it is read from git, undefined without git.
- */
-const readBuildCommit = () => {
-  if (process.env.GIT_COMMIT) {
-    return process.env.GIT_COMMIT;
-  }
-
+/** Sdvico: output of a git command in this checkout; undefined without git (e.g. in Docker). */
+const readGit = (args: string) => {
   try {
-    return execSync('git rev-parse HEAD', {
+    return execSync(`git ${args}`, {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     }).trim();
   } catch {}
 };
+
+/**
+ * Sdvico: release version and commit of this build. The Docker build has no `.git` and gets them
+ * from the `app_version` and `git_commit` build args (empty means unknown).
+ */
+const fromEnvOrGit = (value: string | undefined, gitArgs: string) => {
+  if (value) {
+    return value;
+  }
+
+  return readGit(gitArgs);
+};
+
+const buildVersion = fromEnvOrGit(process.env.APP_VERSION, "describe --tags --match 'v[0-9]*'");
+const buildCommit = fromEnvOrGit(process.env.GIT_COMMIT, 'rev-parse HEAD');
 
 const buildConfig = (mode: string): UserConfig => ({
   base: `${process.env.CONSOLE_PUBLIC_URL ?? '/console'}`,
@@ -83,7 +91,8 @@ const buildConfig = (mode: string): UserConfig => ({
     'import.meta.env.HIDDEN_SIDEBAR_SECTIONS': JSON.stringify(process.env.HIDDEN_SIDEBAR_SECTIONS),
     'import.meta.env.HIDDEN_SIDEBAR_ITEMS': JSON.stringify(process.env.HIDDEN_SIDEBAR_ITEMS),
     // Sdvico: commit and time of this build, shown under the Console logo.
-    'import.meta.env.BUILD_COMMIT': JSON.stringify(readBuildCommit()),
+    'import.meta.env.BUILD_VERSION': JSON.stringify(buildVersion),
+    'import.meta.env.BUILD_COMMIT': JSON.stringify(buildCommit),
     'import.meta.env.BUILD_TIME': JSON.stringify(new Date().toISOString()),
     // `@withtyped/client` needs this to be defined. We can optimize this later.
     'process.env': {},

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import CloudLogo from '@/assets/images/cloud-logo.svg?react';
 import Logo from '@/assets/images/logo.svg?react';
-import { buildCommit, buildTime, isCloud } from '@/consts/env';
+import { buildCommit, buildTime, buildVersion, isCloud } from '@/consts/env';
 import Spacer from '@/ds-components/Spacer';
 import useTenantPathname from '@/hooks/use-tenant-pathname';
 
@@ -12,9 +12,10 @@ import InkeepAskAi from './InkeepAskAi';
 import TenantSelector from './TenantSelector';
 import UserInfo from './UserInfo';
 import styles from './index.module.scss';
-import { formatBuildVersion } from './utils';
+import { formatBuildTime, formatBuildVersion } from './utils';
 
-const buildVersion = formatBuildVersion({ commit: buildCommit, time: buildTime });
+const version = formatBuildVersion({ version: buildVersion, commit: buildCommit, time: buildTime });
+const versionTitle = formatBuildTime(buildTime);
 
 type Props = {
   readonly className?: string;
@@ -39,9 +40,9 @@ function Topbar({ className, hideTenantSelector, hideTitle }: Props) {
           }}
         />
         {/* Sdvico: which build is running, to check a deployment. */}
-        {!isCloud && buildVersion && (
-          <span className={styles.version} title={buildTime}>
-            {buildVersion}
+        {!isCloud && version && (
+          <span className={styles.version} title={versionTitle}>
+            {version}
           </span>
         )}
       </div>

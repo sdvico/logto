@@ -29,6 +29,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history and tags for `git describe`, the version shown under the Console logo.
+          fetch-depth: 0
+
+      - name: Describe version
+        id: version
+        run: echo "describe=$(git describe --tags --match 'v[0-9]*' 2>/dev/null || true)" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -62,6 +69,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           # Shown under the Console logo to tell which build a server runs.
           build-args: |
+            app_version=${{ steps.version.outputs.describe }}
             git_commit=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

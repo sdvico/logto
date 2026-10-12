@@ -31,18 +31,38 @@ const buildTimeFormat = new Intl.DateTimeFormat('en-GB', {
   hourCycle: 'h23',
 });
 
-/**
- * Sdvico: `cc00fa5 · 12/10/2026 10:30` from the commit and build time baked in at build time, so an
- * admin can tell which build a server runs. Leaves out whatever is unknown; undefined if nothing is.
- */
-export const formatBuildVersion = ({ commit, time }: { commit?: string; time?: string }) => {
+/** Sdvico: `12/10/2026 10:30` (Vietnam time), or undefined for a missing or invalid time. */
+export const formatBuildTime = (time?: string) => {
   const date = time ? new Date(time) : undefined;
-  const parts = [
-    commit?.slice(0, shortCommitLength),
-    date && !Number.isNaN(date.getTime())
-      ? buildTimeFormat.format(date).replace(', ', ' ')
-      : undefined,
-  ].filter(Boolean);
+  return date && !Number.isNaN(date.getTime())
+    ? buildTimeFormat.format(date).replace(', ', ' ')
+    : undefined;
+};
 
+/** `git describe --tags` output: `v1.0.4`, or `v1.0.4-3-gf9be67ad1` three commits later. */
+const describeRegEx = /^(v\d[^\s-]*)(?:-\d+-g[\da-f]+)?$/;
+
+/**
+ * Sdvico: the version shown under the Console logo, so an admin can tell which build a server
+ * runs: the latest release tag (`v1.0.4`, also for builds after it). Without a
+ * release tag it falls back to the short commit and build time. Undefined if nothing is known.
+ */
+export const formatBuildVersion = ({
+  version,
+  commit,
+  time,
+}: {
+  version?: string;
+  commit?: string;
+  time?: string;
+}) => {
+  const shortCommit = commit?.slice(0, shortCommitLength);
+  const [, tag] = describeRegEx.exec(version ?? '') ?? [];
+
+  if (tag) {
+    return tag;
+  }
+
+  const parts = [shortCommit, formatBuildTime(time)].filter(Boolean);
   return parts.length > 0 ? parts.join(' · ') : undefined;
 };

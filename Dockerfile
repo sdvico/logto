@@ -29,7 +29,10 @@ ENV APPLICATIONINSIGHTS_CONNECTION_STRING=${applicationinsights_connection_strin
 ARG logto_oss_survey_endpoint=
 ENV LOGTO_OSS_SURVEY_ENDPOINT=${logto_oss_survey_endpoint}
 
-# Sdvico: commit shown under the Console logo (`.git` is not in the build context).
+# Sdvico: release version (`git describe --tags`) and commit shown under the Console logo
+# (`.git` is not in the build context).
+ARG app_version=
+ENV APP_VERSION=${app_version}
 ARG git_commit=
 ENV GIT_COMMIT=${git_commit}
 
